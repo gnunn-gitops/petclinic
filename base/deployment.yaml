@@ -32,7 +32,7 @@ spec:
         deploymentconfig: petclinic
     spec:
       containers:
-      - image: image-registry.openshift-image-registry.svc:5000/petclinic/petclinic@sha256:c6e00c23b2e861f0b5ced81d8fa50674f2deb51fd2a0265463b7e0deed5268bf
+      - image: docker.io/jbrisbin/spring-petclinic:latest
         imagePullPolicy: Always
         livenessProbe:
           failureThreshold: 3
