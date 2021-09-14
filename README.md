@@ -1,0 +1,1 @@
+Simple gitops demo application for OpenShift using the Spring Petclinic application.

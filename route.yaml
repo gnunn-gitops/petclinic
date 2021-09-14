@@ -1,0 +1,21 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: petclinic
+    app.kubernetes.io/component: petclinic
+    app.kubernetes.io/instance: petclinic
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/part-of: petclinic
+    app.openshift.io/runtime-version: latest
+  name: petclinic
+  namespace: petclinic
+spec:
+  host: petclinic-petclinic.apps.home.ocplab.com
+  port:
+    targetPort: 8080-tcp
+  to:
+    kind: Service
+    name: petclinic
+    weight: 100
+  wildcardPolicy: None

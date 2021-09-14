@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    alpha.image.policy.openshift.io/resolve-names: '*'
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"petclinic:latest","namespace":"petclinic"},"fieldPath":"spec.template.spec.containers[?(@.name==\"petclinic\")].image","pause":"false"}]'
+  labels:
+    app: petclinic
+    app.kubernetes.io/component: petclinic
+    app.kubernetes.io/instance: petclinic
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/part-of: petclinic
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-namespace: petclinic
+  name: petclinic
+  namespace: petclinic
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: petclinic
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: petclinic
+        deploymentconfig: petclinic
+    spec:
+      containers:
+      - image: image-registry.openshift-image-registry.svc:5000/petclinic/petclinic@sha256:c6e00c23b2e861f0b5ced81d8fa50674f2deb51fd2a0265463b7e0deed5268bf
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: petclinic
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
