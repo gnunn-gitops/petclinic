@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: petclinic
+  namespace: petclinic-argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - git:
+      repoURL: https://github.com/gnunn-gitops/petclinic.git
+      revision: HEAD
+      directories:
+      - path: environments/overlays/*
+      values:
+        repoURL: https://github.com/gnunn-gitops/petclinic.git
+  template:
+    metadata:
+      name: '{{.path.basename}}'
+    spec:
+      project: "petclinic"
+      source:
+        repoURL: '{{.values.repoURL}}'
+        targetRevision: HEAD
+        path: '{{.path.path}}'
+      destination:
+        server: workload-prod-local
+        namespace: petclinic-{{.path.basename}}
+      syncPolicy:
+        automated:
+          enabled: true
+          selfHeal: true
