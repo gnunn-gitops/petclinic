@@ -13,9 +13,13 @@ spec:
       - path: environments/overlays/*
       values:
         repoURL: https://github.com/gnunn-gitops/petclinic.git
+        destination: workload-prod-local
   template:
     metadata:
-      name: '{{.path.basename}}'
+      labels:
+        argocd-agent: 'true'
+        cluster-name: '{{ .values.destination }}'
+      name: petclinic-{{.path.basename}}
     spec:
       project: "petclinic"
       source:
@@ -23,7 +27,7 @@ spec:
         targetRevision: HEAD
         path: '{{.path.path}}'
       destination:
-        server: workload-prod-local
+        name: '{{ .values.destination }}'
         namespace: petclinic-{{.path.basename}}
       syncPolicy:
         automated:
