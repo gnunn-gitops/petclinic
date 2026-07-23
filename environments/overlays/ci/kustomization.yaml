@@ -9,4 +9,5 @@ resources:
 - m2-cache-pvc.yaml
 - source-pvc.yaml
 - maven-task.yaml
+- pipeline-sa.yaml
 - pipeline.yaml
