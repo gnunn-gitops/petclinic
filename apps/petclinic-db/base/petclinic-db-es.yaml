@@ -1,0 +1,15 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: petclinic-db
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: petclinic
+  target:
+    name: petclinic-db
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: PETCLINIC_DB

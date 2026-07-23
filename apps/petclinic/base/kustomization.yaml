@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+commonLabels:
+  app: petclinic
+  app.kubernetes.io/component: petclinic
+  app.kubernetes.io/instance: petclinic
+  app.kubernetes.io/name: petclinic
+  app.kubernetes.io/part-of: petclinic
+  app.openshift.io/runtime-icon: quarkus
+
+resources:
+- petclinic-svc.yaml
+- petclinic-route.yaml
+- petclinic-rollout.yaml

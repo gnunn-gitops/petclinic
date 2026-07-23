@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+commonLabels:
+  app: petclinic
+  app.kubernetes.io/component: petclinic-db
+  app.kubernetes.io/instance: petclinic-db
+  app.kubernetes.io/name: petclinic-db
+  app.kubernetes.io/part-of: petclinic
+  app.openshift.io/runtime-icon: postgres
+
+resources:
+- petclinic-db-es.yaml
+- petclinic-db.yaml
