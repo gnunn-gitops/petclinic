@@ -83,5 +83,3 @@ spec:
         value: ./Containerfile
   workspaces:
     - name: git-source
-      persistentVolumeClaim:
-        claimName: source
