@@ -80,6 +80,6 @@ spec:
       - name: IMAGE
         value: $(params.image_dest_url):latest
       - name: DOCKERFILE
-        value: ./Containerfile
+        value: src/main/docker/Dockerfile.jvm
   workspaces:
     - name: git-source
