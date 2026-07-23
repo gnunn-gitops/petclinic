@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  labels:
+    tekton.dev/pipeline: petclinic
+  generateName: petclinic-
+  namespace: petclinic-ci
+spec:
+  params:
+  - name: SOURCE_GIT_REVISION
+    value: master
+  - name: SOURCE_GIT_URL
+    value: https://github.com/redhat-developer-demos/quarkus-petclinic
+  pipelineRef:
+    name: petclinic
+  taskRunSpecs:
+  - pipelineTaskName: build
+    podTemplate:
+      hostUsers: false
+  taskRunTemplate:
+    serviceAccountName: pipeline
+  timeouts:
+    pipeline: 1h0m0s
+  workspaces:
+  - name: git-source
+    persistentVolumeClaim:
+      claimName: source

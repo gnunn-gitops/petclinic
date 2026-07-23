@@ -1,0 +1,87 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: petclinic
+spec:
+  params:
+    - name: SOURCE_GIT_REVISION
+      type: string
+      default: master
+    - name: SOURCE_GIT_URL
+      type: string
+      default: https://github.com/redhat-developer-demos/quarkus-petclinic
+    - name: image_dest_url
+      type: string
+      description: External registry location to copy image to
+      default: quay.io/gnunn/quarkus-petclinic
+  tasks:
+    - name: clone
+      taskRef:
+        resolver: cluster
+        params:
+        - name: kind
+          value: task
+        - name: name
+          value: git-clone
+        - name: namespace
+          value: openshift-pipelines
+      workspaces:
+        - name: output
+          workspace: git-source
+      params:
+        - name: URL
+          value: "$(params.SOURCE_GIT_URL)"
+        - name: REVISION
+          value: "$(params.SOURCE_GIT_REVISION)"
+        - name:  DELETE_EXISTING
+          value: "true"
+    - name: generate-id
+      taskRef:
+        kind: Task
+        params:
+          - name: pathInRepo
+            value: task/generate-build-id/1.0/generate-build-id.yaml
+        resolver: git
+      runAfter:
+        - clone
+      workspaces:
+        - name: source
+          workspace: git-source
+    - name: compile
+      taskRef:
+        resolver: cluster
+        params:
+        - name: kind
+          value: task
+        - name: name
+          value: maven
+        - name: namespace
+          value: petclinic-ci
+      workspaces:
+        - name: source
+          workspace: git-source
+      runAfter:
+        - generate-id
+      params:
+        - name: GOALS
+          value:
+            - "package"
+            - "-DskipTests"
+    - name: build
+      taskRef:
+        name: buildah
+        kind: Task
+      workspaces:
+        - name: source
+          workspace: git-source
+      runAfter:
+        - compile
+      params:
+      - name: IMAGE
+        value: $(params.image_dest_url):latest
+      - name: DOCKERFILE
+        value: ./Containerfile
+  workspaces:
+    - name: git-source
+      persistentVolumeClaim:
+        claimName: source

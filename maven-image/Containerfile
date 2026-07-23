@@ -1,0 +1,41 @@
+FROM registry.access.redhat.com/ubi10/openjdk-21
+ARG USER_HOME_DIR="/home/default"
+ARG WORK_DIR="/home/default"
+
+ENV HOME=${USER_HOME_DIR}
+ENV BUILDAH_ISOLATION=chroot
+
+COPY --chown=0:0 entrypoint.sh /
+
+USER 0
+
+RUN microdnf --disableplugin=subscription-manager install -y openssl git tar shadow-utils bash podman aardvark-dns fuse-overlayfs util-linux ; \
+    microdnf update -y ; \
+    microdnf clean all ; \
+    # pip3 install cekit ; \
+    chmod +x /entrypoint.sh ; \
+    ##
+    ## Setup for root-less podman
+    ##
+    # Create the User's home directory
+    # mkdir -p ${USER_HOME_DIR} ; \
+    # chown -R 1000:1000 ${USER_HOME_DIR} ; \
+    #
+    # Add the user to /etc/passwd and /etc/group
+    echo "user:x:1000:1000:devspaces user:${USER_HOME_DIR}:/bin/bash" >> /etc/passwd ; \
+    echo "user:x:1000:" >> /etc/group ; \
+    #
+    # Add entries for uid and gid mappings for the user
+    echo "user:1001:64535" >> /etc/subuid ; \
+    echo "user:1001:64535" >> /etc/subgid ; \
+    #
+    # Enable podman to create uid and gid maps for the user
+    setcap cap_setuid+ep /usr/bin/newuidmap ; \
+    setcap cap_setgid+ep /usr/bin/newgidmap ; \
+
+# The SCC that we are using will ensure that the user runs as UID 1000 in its own user namespace on the host node.
+USER 1000
+WORKDIR ${WORK_DIR}
+# Using catatonit ensures that our running container has a process reaper.  This avoids zombie processes in the container.
+ENTRYPOINT ["/usr/libexec/podman/catatonit","--","/entrypoint.sh"]
+CMD [ "tail", "-f", "/dev/null" ]
