@@ -69,8 +69,14 @@ spec:
             - "-DskipTests"
     - name: build
       taskRef:
-        name: buildah
-        kind: Task
+        resolver: cluster
+        params:
+        - name: kind
+          value: task
+        - name: name
+          value: buildah
+        - name: namespace
+          value: openshift-pipelines
       workspaces:
         - name: source
           workspace: git-source
