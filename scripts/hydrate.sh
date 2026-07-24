@@ -86,8 +86,8 @@ else
 
   # Clear existing files and copy new manifests
   git rm -rf . 2>/dev/null || true
-  git rm -rf ./.github 2>/dev/null || true
-  git rm -rf ./scripts 2>/dev/null || true
+  # git rm -rf ./.github 2>/dev/null || true
+  # git rm -rf ./scripts 2>/dev/null || true
   cp ${NEW_MANIFESTS} manifests.yaml
 
   # Create hydrator.metadata with full commit info
