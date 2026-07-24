@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    argocd-agent: "true"
+    cluster-name: workload-prod-local
+  name: petclinic-ci
+spec:
+  destination:
+    name: workload-prod-local
+    namespace: petclinic-ci
+  project: petclinic
+  source:
+    path: apps/ci
+    repoURL: https://github.com/gnunn-gitops/petclinic.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      enabled: true
+      selfHeal: true

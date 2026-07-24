@@ -22,13 +22,14 @@ spec:
       labels:
         argocd-agent: 'true'
         cluster-name: '{{ .values.destination }}'
+        promoter.argoproj.io/has-promotionstrategy: "true"
       name: petclinic-{{.path.basename}}
     spec:
       project: "petclinic"
       source:
         repoURL: '{{.values.repoURL}}'
-        targetRevision: HEAD
-        path: '{{.path.path}}'
+        targetRevision: "environment/{{.path.basename}}"
+        path: '.'
       destination:
         name: '{{ .values.destination }}'
         namespace: petclinic-{{.path.basename}}
