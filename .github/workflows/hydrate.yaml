@@ -8,8 +8,12 @@ jobs:
   hydrate-branch:
     runs-on: ubuntu-latest
     steps:
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Code Checkout
         uses: actions/checkout@v7
-      - name: Create and push development-next branch
+      - name: Create and push dev-next branch
         run: |
           ./scripts/hydrate.sh dev
