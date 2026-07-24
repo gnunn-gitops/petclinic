@@ -22,7 +22,6 @@ spec:
       labels:
         argocd-agent: 'true'
         cluster-name: '{{ .values.destination }}'
-        promoter.argoproj.io/has-promotionstrategy: "true"
       name: petclinic-{{.path.basename}}
     spec:
       project: "petclinic"

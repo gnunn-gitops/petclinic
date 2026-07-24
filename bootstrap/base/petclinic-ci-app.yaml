@@ -4,6 +4,7 @@ metadata:
   labels:
     argocd-agent: "true"
     cluster-name: workload-prod-local
+    promoter.argoproj.io/has-promotionstrategy: "true"
   name: petclinic-ci
 spec:
   destination:
