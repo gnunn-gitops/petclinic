@@ -6,6 +6,7 @@ namespace: petclinic-ci
 resources:
 #- scc-binding.yaml
 - docker-external-secret.yaml
+- gitops-promoter-github-app-key.yaml
 - m2-cache-pvc.yaml
 - source-pvc.yaml
 - maven-task.yaml

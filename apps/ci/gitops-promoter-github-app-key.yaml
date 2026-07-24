@@ -1,0 +1,15 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: gitops-promoter-github-app
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: petclinic
+    kind: ClusterSecretStore
+  target:
+    creationPolicy: Owner
+  data:
+  - secretKey: githubAppPrivateKey
+    remoteRef:
+      key: GITOPS_PROMOTER_GITHUB_KEY
