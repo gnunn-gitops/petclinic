@@ -14,3 +14,4 @@ resources:
 - pipeline.yaml
 - scm-provider.yaml
 - git-repository.yaml
+- promotionstrategy.yaml
