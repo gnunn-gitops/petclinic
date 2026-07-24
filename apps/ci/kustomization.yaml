@@ -12,3 +12,5 @@ resources:
 - maven-task.yaml
 - pipeline-sa.yaml
 - pipeline.yaml
+- scm-provider.yaml
+- git-repository.yaml

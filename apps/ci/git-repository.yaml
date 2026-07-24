@@ -1,0 +1,10 @@
+apiVersion: promoter.argoproj.io/v1alpha1
+kind: GitRepository
+metadata:
+  name: petclinic
+spec:
+  github:
+    name: petclinic
+    owner: gnunn-gitops
+  scmProviderRef:
+    name: petclinic
