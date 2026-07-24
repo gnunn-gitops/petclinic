@@ -1,0 +1,15 @@
+name: Hydrate Manifests
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  hydrate-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v7
+      - name: Create and push development-next branch
+        run: |
+          ./scripts/hydrate.sh dev
