@@ -87,6 +87,8 @@ spec:
         value: $(params.image_dest_url):latest
       - name: DOCKERFILE
         value: src/main/docker/Dockerfile.jvm
+      - name: BUILD_EXTRA_ARGS
+        value: "--label=COMMIT=$(tasks.generate-id.results.short_commit) --label=BUILD_UID=$(tasks.generate-id.results.build_uid)"
     - name: tag-image
       taskRef:
         name: push-image
