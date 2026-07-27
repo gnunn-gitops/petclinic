@@ -11,3 +11,4 @@ resources:
 - maven-task.yaml
 - pipeline-sa.yaml
 - pipeline.yaml
+- trigger.yaml

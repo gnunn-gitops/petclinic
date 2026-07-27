@@ -9,7 +9,7 @@ spec:
       default: master
     - name: SOURCE_GIT_URL
       type: string
-      default: https://github.com/redhat-developer-demos/quarkus-petclinic
+      default: https://github.com/gnunn-gitops/quarkus-petclinic
     - name: image_dest_url
       type: string
       description: External registry location to copy image to

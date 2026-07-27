@@ -1,0 +1,36 @@
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: petclinic-webhook
+spec:
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1
+      kind: PipelineRun
+      metadata:
+        annotations:
+          argocd.argoproj.io/compare-options: IgnoreExtraneous
+          argocd.argoproj.io/sync-options: Prune=false
+        labels:
+          tekton.dev/pipeline: petclinic
+        generateName: petclinic-webhook-
+      spec:
+        pipelineRef:
+          name: petclinic
+        timeouts:
+          pipeline: 1h0m0s
+        workspaces:
+        - name: git-source
+          persistentVolumeClaim:
+            claimName: source
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: petclinic
+spec:
+  serviceAccountName: pipeline
+  triggers:
+    - name: petclinic-webhook
+      template:
+        ref: petclinic-webhook
