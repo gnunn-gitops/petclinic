@@ -17,8 +17,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: argocd-argocd-image-updater-controller
-  apiGroup: rbac.authorization.k8s.io
 roleRef:
-  kind: Role                 # Must be Role or ClusterRole
-  name: image-updater-github
   apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: image-updater-github
