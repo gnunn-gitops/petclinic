@@ -34,3 +34,22 @@ spec:
     - name: petclinic-webhook
       template:
         ref: petclinic-webhook
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: petclinic
+  labels:
+    app.kubernetes.io/managed-by: EventListener
+    app.kubernetes.io/part-of: petclinic
+    eventlistener: petclinic
+spec:
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: el-petclinic
+    weight: 100
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
