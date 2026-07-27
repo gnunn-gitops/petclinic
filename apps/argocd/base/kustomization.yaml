@@ -4,7 +4,9 @@ kind: Kustomization
 namespace: petclinic-argocd
 
 resources:
+- github-external-secret.yaml
 - gitops-promoter-github-app-key.yaml
 - scm-provider.yaml
 - git-repository.yaml
 - promotion-strategy.yaml
+- image-updater.yaml
