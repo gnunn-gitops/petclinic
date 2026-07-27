@@ -56,7 +56,7 @@ spec:
         - name: name
           value: maven
         - name: namespace
-          value: petclinic-ci
+          value: openshift-pipelines
       workspaces:
         - name: source
           workspace: git-source
