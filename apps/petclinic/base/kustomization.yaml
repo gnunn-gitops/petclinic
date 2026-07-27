@@ -1,6 +1,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
 labels:
   - includeSelectors: false
     includeTemplates: true
@@ -11,8 +10,11 @@ labels:
       app.kubernetes.io/name: petclinic
       app.kubernetes.io/part-of: petclinic
       app.openshift.io/runtime-icon: quarkus
-
 resources:
-- petclinic-svc.yaml
-- petclinic-route.yaml
-- petclinic-rollout.yaml
+  - petclinic-svc.yaml
+  - petclinic-route.yaml
+  - petclinic-rollout.yaml
+images:
+  - name: quay.io/gnunn/quarkus-petclinic
+    newName: quay.io/gnunn/quarkus-petclinic
+    newTag: ddf1cd6-3H6ZAcqdic8T6T5kn8QPMAQOHq5
