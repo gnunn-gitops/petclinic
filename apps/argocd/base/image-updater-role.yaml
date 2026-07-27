@@ -1,0 +1,24 @@
+# Should this be part of tenant config, it's hard to pre-determine github secret name?
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: image-updater-github
+rules:
+- apiGroups: [""]            # The core API group is denoted by ""
+  resources: ["secrets"]
+  # Limit image-updater to the specific secret needed for github
+  resourceNames: ["github"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: image-updater-github
+subjects:
+- kind: ServiceAccount
+  name: argocd-argocd-image-updater-controller
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role                 # Must be Role or ClusterRole
+  name: image-updater-github
+  apiGroup: rbac.authorization.k8s.io
