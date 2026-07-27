@@ -1,0 +1,23 @@
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: petclinic
+  namespace: petclinic-ci
+spec:
+  applicationRefs:
+    - namePattern: "petclinic-*"  # Select applications matching this pattern
+      images:
+        - alias: "quarkus-petclinic"
+          imageName: "quay.io/gnunn/quarkus-petclinic:ddf1cd6-3H6MBhb6WwzGBsm1lSi4i6kbymH"
+          commonUpdateSettings:
+            allowTags: "regexp:^[0-9a-fA-F]{7,40}-[0-9a-zA-Z]{27}$"
+            ignoreTags: "latest"
+            updateStrategy: latest/newest-build
+          manifestTargets:
+            kustomize:
+              name: "quay.io/gnunn/quarkus-petclinic"
+      writeBackConfig:
+        method: "git:secret:petclinic-argocd/github"
+        gitConfig:
+          branch: "main"
+          writeBackTarget: "kustomization:/apps/petclinic/base"
