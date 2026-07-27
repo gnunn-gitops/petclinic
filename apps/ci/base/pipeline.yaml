@@ -95,7 +95,7 @@ spec:
         - build
       params:
         - name: SRC_IMAGE
-          value: $(params.image_dest_url)@$(tasks.build-image.results.IMAGE_DIGEST)
+          value: $(params.image_dest_url)@$(tasks.build.results.IMAGE_DIGEST)
         - name: DEST_IMAGE
           value: $(params.image_dest_url)
         - name: DEST_TAGS
