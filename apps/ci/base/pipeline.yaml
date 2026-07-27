@@ -87,5 +87,18 @@ spec:
         value: $(params.image_dest_url):latest
       - name: DOCKERFILE
         value: src/main/docker/Dockerfile.jvm
+    - name: tag-image
+      taskRef:
+        name: push-image
+        kind: Task
+      runAfter:
+        - build
+      params:
+        - name: SRC_IMAGE
+          value: $(params.image_dest_url)@$(tasks.build-image.results.IMAGE_DIGEST)
+        - name: DEST_IMAGE
+          value: $(params.image_dest_url)
+        - name: DEST_TAGS
+          value: "$(tasks.generate-id.results.tag_id)"
   workspaces:
     - name: git-source

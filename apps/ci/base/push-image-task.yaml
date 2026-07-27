@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: push-image
+spec:
+  params:
+  - name: SRC_IMAGE
+    type: string
+  - name: DEST_IMAGE
+    type: string
+  - name: DEST_TAGS
+    type: string
+    default: ""
+  - name: DOCKER_CONFIG
+    type: string
+    default: "docker-config"
+    description: Secret with the .dockerconfigjson file needed to push to the registry
+  steps:
+    - name: run-commands
+      image: quay.io/skopeo/stable:v1.13.2
+      script: |
+        #!/usr/bin/env bash
+
+        if [ "$(params.DEST_TAGS)" != "" ];
+        then
+
+          tags=$(params.DEST_TAGS)
+          for i in ${tags//,/ }
+          do
+            echo "Copying image docker://$(params.SRC_IMAGE) to docker://$(params.DEST_IMAGE):$i"
+            skopeo copy --src-tls-verify=false --dest-tls-verify=false docker://$(params.SRC_IMAGE) --dest-authfile=/tekton/creds-secrets/$(params.DOCKER_CONFIG)/.dockerconfigjson docker://$(params.DEST_IMAGE):$i
+          done
+        fi

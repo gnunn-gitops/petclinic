@@ -1,0 +1,11 @@
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: petclinic
+  namespace: petclinic-ci
+spec:
+  applicationRefs:
+    - namePattern: "petclinic-*"  # Select applications matching this pattern
+      images:
+        - alias: "quarkus-petclinic"
+          imageName: "quay.io/gnunn/quarkus-petclinic"
