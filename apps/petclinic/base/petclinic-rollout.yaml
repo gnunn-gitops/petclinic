@@ -18,7 +18,7 @@ spec:
         plugins:
           argoproj-labs/openshift:
             routes:
-              - canary
+              - petclinic
       steps:
       - setWeight: 20
       - pause: {duration: 10}
