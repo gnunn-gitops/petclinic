@@ -1,8 +1,8 @@
 {
-  "drySha": "ea8b9261e4a6d150381c02811bd8d356c4553e7f",
+  "drySha": "0bf7223c5795f4753d4f86a0e1ff1b225cf4defc",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-28T14:20:57-07:00",
-  "subject": "Enable prune\n",
+  "date": "2026-07-28T14:27:26-07:00",
+  "subject": "Update steps and replicas\n",
   "body": "\n"
 }

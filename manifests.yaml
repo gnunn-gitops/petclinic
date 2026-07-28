@@ -186,7 +186,7 @@ metadata:
   namespace: petclinic-dev
 spec:
   progressDeadlineSeconds: 600
-  replicas: 1
+  replicas: 4
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -199,15 +199,10 @@ spec:
       - setWeight: 20
       - pause:
           duration: 10
-      - setWeight: 40
-      - pause:
-          duration: 10
-      - setWeight: 60
-      - pause:
-          duration: 10
       - setWeight: 80
       - pause:
           duration: 10
+      - setWeight: 100
       trafficRouting:
         plugins:
           argoproj-labs/openshift:
