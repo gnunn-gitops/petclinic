@@ -1,8 +1,8 @@
 {
-  "drySha": "b65cb6fab42b136f3f876060a0652320561271a5",
+  "drySha": "e106ab9887a31ad71f9821d9871661a384d8bab6",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-28T15:04:51-07:00",
-  "subject": "Tune requests and limits\n",
+  "date": "2026-07-28T15:08:10-07:00",
+  "subject": "Use dynamic scaling to reduce pods\n",
   "body": "\n"
 }
