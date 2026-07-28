@@ -1,8 +1,8 @@
 {
-  "drySha": "d5293f9870c71f2f03e8f45ff2bb0c1ee84ac93e",
+  "drySha": "6377f6e62083deb07a0c1d7fe8e6849d5bd69e4a",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-24T08:43:31-07:00",
-  "subject": "Comment additional rm\n",
+  "date": "2026-07-28T09:55:36-07:00",
+  "subject": "Re-jig hydration for stage and prod as separate jobs\n",
   "body": "\n"
 }
