@@ -1,8 +1,8 @@
 {
-  "drySha": "d5293f9870c71f2f03e8f45ff2bb0c1ee84ac93e",
+  "drySha": "0064571266b938894f116d3f02966e18eccb7cb1",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-24T08:43:31-07:00",
-  "subject": "Comment additional rm\n",
+  "date": "2026-07-28T08:55:31-07:00",
+  "subject": "Hydrate to release on semver tag\n",
   "body": "\n"
 }
