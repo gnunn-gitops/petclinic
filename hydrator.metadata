@@ -1,8 +1,8 @@
 {
-  "drySha": "6377f6e62083deb07a0c1d7fe8e6849d5bd69e4a",
+  "drySha": "ec3d2bd1bd06bd3ee0673aa6d31cf1454fb1b9a4",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-28T09:55:36-07:00",
-  "subject": "Re-jig hydration for stage and prod as separate jobs\n",
+  "date": "2026-07-28T15:23:44-07:00",
+  "subject": "Fix ports\n",
   "body": "\n"
 }
