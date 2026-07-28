@@ -1,8 +1,8 @@
 {
-  "drySha": "3debccfa41e1ca43ec7e45a028aef73a6ca632b5",
+  "drySha": "ec3d2bd1bd06bd3ee0673aa6d31cf1454fb1b9a4",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-28T09:49:03-07:00",
-  "subject": "Update script to checkout main between stage and prod\n",
+  "date": "2026-07-28T15:23:44-07:00",
+  "subject": "Fix ports\n",
   "body": "\n"
 }
