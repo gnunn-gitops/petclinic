@@ -1,8 +1,8 @@
 {
-  "drySha": "55ec4bedf76fa96c01fab13e9e7e1fa2eefccb1c",
+  "drySha": "962f4aef1dd8ae1bf89ac97fab310169a271d2b5",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-28T14:03:52-07:00",
-  "subject": "Switch from Deployment to Rollout\n",
+  "date": "2026-07-28T14:11:26-07:00",
+  "subject": "Remove unneeded labels\n",
   "body": "\n"
 }

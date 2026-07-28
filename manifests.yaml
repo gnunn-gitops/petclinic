@@ -51,12 +51,6 @@ metadata:
   name: petclinic-stable
   namespace: petclinic-dev
 spec:
-  labels:
-    app: petclinic
-    app.kubernetes.io/component: petclinic
-    app.kubernetes.io/instance: petclinic
-    app.kubernetes.io/name: petclinic
-    app.kubernetes.io/part-of: petclinic
   ports:
   - name: 8080-tcp
     port: 8080
