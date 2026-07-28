@@ -1,8 +1,8 @@
 {
-  "drySha": "962f4aef1dd8ae1bf89ac97fab310169a271d2b5",
+  "drySha": "ea8b9261e4a6d150381c02811bd8d356c4553e7f",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-28T14:11:26-07:00",
-  "subject": "Remove unneeded labels\n",
+  "date": "2026-07-28T14:20:57-07:00",
+  "subject": "Enable prune\n",
   "body": "\n"
 }
