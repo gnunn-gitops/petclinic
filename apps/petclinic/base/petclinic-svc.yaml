@@ -3,12 +3,6 @@ kind: Service
 metadata:
   name: petclinic-stable
 spec:
-  labels:
-    app: petclinic
-    app.kubernetes.io/component: petclinic
-    app.kubernetes.io/instance: petclinic
-    app.kubernetes.io/name: petclinic
-    app.kubernetes.io/part-of: petclinic
   ports:
   - name: 8080-tcp
     port: 8080
@@ -20,12 +14,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app: petclinic
-    app.kubernetes.io/component: petclinic
-    app.kubernetes.io/instance: petclinic
-    app.kubernetes.io/name: petclinic
-    app.kubernetes.io/part-of: petclinic
   name: petclinic-canary
 spec:
   ports:

@@ -1,12 +1,6 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  labels:
-    app: petclinic
-    app.kubernetes.io/component: petclinic
-    app.kubernetes.io/instance: petclinic
-    app.kubernetes.io/name: petclinic
-    app.kubernetes.io/part-of: petclinic
   name: petclinic
 spec:
   progressDeadlineSeconds: 600
