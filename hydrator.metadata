@@ -1,8 +1,8 @@
 {
-  "drySha": "0bf7223c5795f4753d4f86a0e1ff1b225cf4defc",
+  "drySha": "b65cb6fab42b136f3f876060a0652320561271a5",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-28T14:27:26-07:00",
-  "subject": "Update steps and replicas\n",
+  "date": "2026-07-28T15:04:51-07:00",
+  "subject": "Tune requests and limits\n",
   "body": "\n"
 }
