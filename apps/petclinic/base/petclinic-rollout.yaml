@@ -11,6 +11,7 @@ spec:
       app: petclinic
   strategy:
     canary:
+      dynamicStableScale: true
       canaryService: petclinic-canary
       stableService: petclinic-stable
       trafficRouting:
