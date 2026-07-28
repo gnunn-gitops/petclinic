@@ -31,7 +31,6 @@ spec:
         openshift.io/generated-by: OpenShiftWebConsole
       labels:
         app: petclinic
-        deployment: petclinic
     spec:
       containers:
       - image: quay.io/gnunn/quarkus-petclinic:latest
