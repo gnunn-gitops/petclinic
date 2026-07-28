@@ -22,6 +22,8 @@ spec:
       labels:
         argocd-agent: 'true'
         cluster-name: '{{ .values.destination }}'
+        env: '{{.path.basename}}'
+        app: petclinic
       name: petclinic-{{.path.basename}}
     spec:
       project: "petclinic"
