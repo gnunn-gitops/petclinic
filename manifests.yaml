@@ -208,7 +208,7 @@ spec:
         plugins:
           argoproj-labs/openshift:
             routes:
-            - canary
+            - petclinic
   template:
     metadata:
       annotations:

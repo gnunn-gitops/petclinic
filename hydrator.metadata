@@ -1,8 +1,8 @@
 {
-  "drySha": "e106ab9887a31ad71f9821d9871661a384d8bab6",
+  "drySha": "7f98dcb663a17c5d87b6c60a2091934e1052856f",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-28T15:08:10-07:00",
-  "subject": "Use dynamic scaling to reduce pods\n",
+  "date": "2026-07-28T15:11:36-07:00",
+  "subject": "Fix route name\n",
   "body": "\n"
 }
