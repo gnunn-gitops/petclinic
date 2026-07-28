@@ -1,8 +1,8 @@
 {
-  "drySha": "0064571266b938894f116d3f02966e18eccb7cb1",
+  "drySha": "3debccfa41e1ca43ec7e45a028aef73a6ca632b5",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-28T08:55:31-07:00",
-  "subject": "Hydrate to release on semver tag\n",
+  "date": "2026-07-28T09:49:03-07:00",
+  "subject": "Update script to checkout main between stage and prod\n",
   "body": "\n"
 }
