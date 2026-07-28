@@ -19,8 +19,8 @@ jobs:
           ./scripts/hydrate.sh stage
           git tag ${{ github.ref_name }}-stage-next
           git push origin ${{ github.ref_name }}-stage-next
-      - name: Create and push prod-next branch
-        run: |
+          # Switch back to main branch to hydrate it
+          git checkout main
           ./scripts/hydrate.sh prod
           git tag ${{ github.ref_name }}-prod-next
           git push origin ${{ github.ref_name }}-prod-next
