@@ -7,17 +7,41 @@ metadata:
     app.kubernetes.io/instance: petclinic
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
-    app.openshift.io/runtime-version: latest
   name: petclinic
-  namespace: petclinic-dev
+  annotations:
+    haproxy.router.openshift.io/disable_cookies: 'true'
+    haproxy.router.openshift.io/balance: roundrobin
 spec:
   port:
-    targetPort: 8080-tcp
+    targetPort: http
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
   to:
     kind: Service
-    name: petclinic
+    name: petclinic-stable
     weight: 100
-  wildcardPolicy: None
+  alternateBackends:
+    - kind: Service
+      name: petclinic-canary
+      weight: 0
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: petclinic
+    app.kubernetes.io/component: petclinic
+    app.kubernetes.io/instance: petclinic
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/part-of: petclinic
+  name: petclinic-canary
+spec:
+  port:
+    targetPort: http
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: petclinic-canary

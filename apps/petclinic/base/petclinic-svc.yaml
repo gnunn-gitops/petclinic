@@ -1,14 +1,32 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: petclinic-stable
+spec:
   labels:
     app: petclinic
     app.kubernetes.io/component: petclinic
     app.kubernetes.io/instance: petclinic
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
-    app.openshift.io/runtime-version: latest
-  name: petclinic
+  ports:
+  - name: 8080-tcp
+    port: 8080
+  - name: 8443-tcp
+    port: 8443
+  selector:
+    app: petclinic
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: petclinic
+    app.kubernetes.io/component: petclinic
+    app.kubernetes.io/instance: petclinic
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/part-of: petclinic
+  name: petclinic-canary
 spec:
   ports:
   - name: 8080-tcp
@@ -17,4 +35,3 @@ spec:
     port: 8443
   selector:
     app: petclinic
-    deployment: petclinic

@@ -1,8 +1,13 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
+  labels:
+    app: petclinic
+    app.kubernetes.io/component: petclinic
+    app.kubernetes.io/instance: petclinic
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/part-of: petclinic
   name: petclinic
-  namespace: petclinic-dev
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -11,10 +16,23 @@ spec:
     matchLabels:
       app: petclinic
   strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
+    canary:
+      canaryService: petclinic-canary
+      stableService: petclinic-stable
+      trafficRouting:
+        plugins:
+          argoproj-labs/openshift:
+            routes:
+              - canary
+      steps:
+      - setWeight: 20
+      - pause: {}
+      - setWeight: 40
+      - pause: {duration: 10}
+      - setWeight: 60
+      - pause: {duration: 10}
+      - setWeight: 80
+      - pause: {duration: 10}
   template:
     metadata:
       annotations:
@@ -41,11 +59,15 @@ spec:
                 name: petclinic-db
         livenessProbe:
           httpGet:
-            path: /
+            path: /q/health/live
             port: 8080
         readinessProbe:
           httpGet:
-            path: /
+            path: /q/health/ready
+            port: 8080
+        startupProbe:
+          httpGet:
+            path: /q/health/started
             port: 8080
         name: petclinic
         ports:
