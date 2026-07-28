@@ -1,11 +1,11 @@
-name: Hydrate Manifests
+name: Hydrate Dev Manifests
 on:
   push:
     branches:
       - "main"
 
 jobs:
-  hydrate-branch:
+  hydrate-dev:
     runs-on: ubuntu-latest
     steps:
       - name: Configure Git

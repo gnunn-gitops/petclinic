@@ -1,0 +1,26 @@
+name: Hydrate Release Manifests
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  hydrate-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Code Checkout
+        uses: actions/checkout@v7
+      - name: Create and push stage-next branch
+        run: |
+          ./scripts/hydrate.sh stage
+          git tag ${{ github.ref_name }}-stage-next
+          git push origin ${{ github.ref_name }}-stage-next
+      - name: Create and push prod-next branch
+        run: |
+          ./scripts/hydrate.sh prod
+          git tag ${{ github.ref_name }}-prod-next
+          git push origin ${{ github.ref_name }}-prod-next
