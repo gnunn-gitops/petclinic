@@ -32,9 +32,8 @@ spec:
             success: false
           }
       expression: "Variables.success"
-      response:
-        output:
-          expression: 'Variables'
+      output:
+        expression: 'Variables'
   mode:
     context: promotionstrategy
     polling:
