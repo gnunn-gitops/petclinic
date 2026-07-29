@@ -7,9 +7,9 @@ spec:
     name: petclinic
   key: acs-policy-violation
   reportOn: active
-  descriptionTemplate: 'Validating ACS Policies ({{ .Phase }}) for {{ index .TriggerVariables "currentSha" }}'
+  descriptionTemplate: 'ACS Policies (completed: {{ index .SuccessVariables "success" }}, critical: {{ index .SuccessVariables "critical" }}, high: {{ index .SuccessVariables "high" }} ) '
   httpRequest:
-    urlTemplate: https://central-rhacs-operator.apps.hub.ocplab.com/v1/alerts?query=Namespace:petclinic-{{ .Branch | splitList "/" | last }}&State:ACTIVE
+    urlTemplate: https://central-rhacs-operator.apps.hub.ocplab.com/v1/alerts?query=Namespace:petclinic-{{ .Branch | splitList "/" | last }}
     methodTemplate: GET
     timeout: 30s
     authentication:
@@ -20,6 +20,13 @@ spec:
     when:
       variables:
         expression: |
+          let default = {
+            success: false,
+            critical: "NA",
+            high: "NA",
+            medium: "NA",
+            low: "NA",
+          };
           Response != nil ? {
             critical: count(Response.Body.alerts, .policy.severity=="CRITICAL_SEVERITY"),
             high: count(Response.Body.alerts, .policy.severity=="HIGH_SEVERITY"),
@@ -27,10 +34,7 @@ spec:
             low: count(Response.Body.alerts, .policy.severity=="LOW_SEVERITY"),
             total: len(Response.Body.alerts),
             success: Response.StatusCode == 200
-          } :
-          {
-            success: false
-          }
+          } : default
       expression: "Variables.success"
       output:
         expression: 'Variables'
