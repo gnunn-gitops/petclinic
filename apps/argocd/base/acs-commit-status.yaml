@@ -20,7 +20,7 @@ spec:
     when:
       variables:
         expression: |
-          let default = {
+          let prev = SuccessOutput ?? {
             status: "Pending",
             critical: 0,
             high: 0,
@@ -44,7 +44,7 @@ spec:
                 medium: 0,
                 low: 0,
               }
-           : default
+           : prev
       expression: |
         Variables.status == "Success" && Variables.critical == 0
       output:
@@ -52,4 +52,4 @@ spec:
   mode:
     context: promotionstrategy
     polling:
-      interval: 1m
+      interval: 5m
