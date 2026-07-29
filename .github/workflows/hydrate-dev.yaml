@@ -17,3 +17,29 @@ jobs:
       - name: Create and push dev-next branch
         run: |
           ./scripts/hydrate.sh dev
+
+  hydrate-stage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Code Checkout
+        uses: actions/checkout@v7
+      - name: Create and push stage-next branch
+        run: |
+          ./scripts/hydrate.sh stage
+
+  hydrate-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Code Checkout
+        uses: actions/checkout@v7
+      - name: Create and push stage-next branch
+        run: |
+          ./scripts/hydrate.sh prod
