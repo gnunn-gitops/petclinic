@@ -1,8 +1,8 @@
 {
-  "drySha": "ec3d2bd1bd06bd3ee0673aa6d31cf1454fb1b9a4",
+  "drySha": "0cff4b8892df39a57c60bb57dff7cedc454fd0f1",
   "repoURL": "https://github.com/org/repo",
-  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-28T15:23:44-07:00",
-  "subject": "Fix ports\n",
-  "body": "\n"
+  "author": "argocd-image-updater <noreply@argoproj.io>",
+  "date": "2026-07-29T21:48:18Z",
+  "subject": "build: automatic update of petclinic-prod\n",
+  "body": "updates image gnunn/quarkus-petclinic tag 'a2bdaba-3H8gYyMF8cbCB4EfYACwtAqlQol' to 'a2bdaba-3HCA8KOSYGBprpf67vg2fh1CuQ9'\n\n"
 }
