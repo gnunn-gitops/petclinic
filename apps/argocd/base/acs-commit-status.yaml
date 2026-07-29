@@ -7,7 +7,7 @@ spec:
     name: petclinic
   key: acs-policy-violation
   reportOn: active
-  descriptionTemplate: 'ACS Policies (completed: {{ index .SuccessVariables "success" }}, critical: {{ index .SuccessVariables "critical" }}, high: {{ index .SuccessVariables "high" }} ) '
+  descriptionTemplate: 'status: {{ index .SuccessVariables "status" }}, critical: {{ index .SuccessVariables "critical" }}, high: {{ index .SuccessVariables "high" }} '
   httpRequest:
     urlTemplate: https://central-rhacs-operator.apps.hub.ocplab.com/v1/alerts?query=Namespace:petclinic-{{ .Branch | splitList "/" | last }}
     methodTemplate: GET
@@ -21,24 +21,35 @@ spec:
       variables:
         expression: |
           let default = {
-            success: false,
-            critical: "NA",
-            high: "NA",
-            medium: "NA",
-            low: "NA",
+            status: "Pending",
+            critical: 0,
+            high: 0,
+            medium: 0,
+            low: 0,
           };
-          Response != nil ? {
-            critical: count(Response.Body.alerts, .policy.severity=="CRITICAL_SEVERITY"),
-            high: count(Response.Body.alerts, .policy.severity=="HIGH_SEVERITY"),
-            medium: count(Response.Body.alerts, .policy.severity=="MEDIUM_SEVERITY"),
-            low: count(Response.Body.alerts, .policy.severity=="LOW_SEVERITY"),
-            total: len(Response.Body.alerts),
-            success: Response.StatusCode == 200
-          } : default
-      expression: "Variables.success"
+          Response != nil ?
+            Response.StatusCode == 200 ?
+              {
+                critical: count(Response.Body.alerts, .policy.severity=="CRITICAL_SEVERITY"),
+                high: count(Response.Body.alerts, .policy.severity=="HIGH_SEVERITY"),
+                medium: count(Response.Body.alerts, .policy.severity=="MEDIUM_SEVERITY"),
+                low: count(Response.Body.alerts, .policy.severity=="LOW_SEVERITY"),
+                total: len(Response.Body.alerts),
+                status: "Success"
+              } :
+              {
+                status: "Failed (" + Response.StatusCode + ")",
+                critical: 0,
+                high: 0,
+                medium: 0,
+                low: 0,
+              }
+           : default
+      expression: |
+        Variables.status == "Success" && Variables.critical == 0
       output:
         expression: 'Variables'
   mode:
     context: promotionstrategy
     polling:
-      interval: 5m
+      interval: 1m
