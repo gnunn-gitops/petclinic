@@ -9,7 +9,7 @@ spec:
   reportOn: active
   descriptionTemplate: 'Validating ACS Policies ({{ .Phase }}) for {{ index .TriggerVariables "currentSha" }}'
   httpRequest:
-    urlTemplate: https://central-rhacs-operator.apps.hub.ocplab.com/v1/alerts?query=Namespace%3Apetclinic-{{ .Branch | splitList "/" | last }}+Violation+State%3AACTIVE
+    urlTemplate: https://central-rhacs-operator.apps.hub.ocplab.com/v1/alerts?query=Namespace%3Apetclinic-dev+Violation+State%3AACTIVE
     methodTemplate: GET
     timeout: 30s
     authentication:
@@ -19,7 +19,7 @@ spec:
   success:
     when:
       expression: >-
-        Response != nil ? (Response.StatusCode == 200 && size(Response.Body.alerts) == 0) : Phase == "success"
+        Response != nil && Response.Body != nil  ? (Response.StatusCode == 200 && size(Response.Body.alerts) == 0) : Phase == "success"
   mode:
     context: promotionstrategy
     polling:
