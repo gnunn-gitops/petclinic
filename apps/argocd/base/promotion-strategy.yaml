@@ -5,12 +5,13 @@ metadata:
 spec:
   activeCommitStatuses:
     - key: argocd-health-petclinic
+    - key: acs-policy-violation
   environments:
   - autoMerge: true
     branch: environment/dev
-  - autoMerge: true
+  - autoMerge: false
     branch: environment/stage
-  - autoMerge: true
+  - autoMerge: false
     branch: environment/prod
   gitRepositoryRef:
     name: petclinic
