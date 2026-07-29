@@ -9,7 +9,7 @@ spec:
   reportOn: active
   descriptionTemplate: 'Validating ACS Policies ({{ .Phase }}) for {{ index .TriggerVariables "currentSha" }}'
   httpRequest:
-    urlTemplate: https://central-rhacs-operator.apps.hub.ocplab.com/v1/alerts?query=Namespace%3Apetclinic-dev+Violation+State%3AACTIVE
+    urlTemplate: https://central-rhacs-operator.apps.hub.ocplab.com/v1//v1/alerts?query=Namespace:petclinic-dev+Violation%20State:ACTIVE
     methodTemplate: GET
     timeout: 30s
     authentication:
