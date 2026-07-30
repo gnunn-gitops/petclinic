@@ -19,12 +19,12 @@ spec:
       taskRef:
         resolver: cluster
         params:
-        - name: kind
-          value: task
-        - name: name
-          value: git-clone
-        - name: namespace
-          value: openshift-pipelines
+          - name: kind
+            value: task
+          - name: name
+            value: git-clone
+          - name: namespace
+            value: openshift-pipelines
       workspaces:
         - name: output
           workspace: git-source
@@ -33,7 +33,7 @@ spec:
           value: "$(params.SOURCE_GIT_URL)"
         - name: REVISION
           value: "$(params.SOURCE_GIT_REVISION)"
-        - name:  DELETE_EXISTING
+        - name: DELETE_EXISTING
           value: "true"
     - name: generate-id
       taskRef:
@@ -51,12 +51,12 @@ spec:
       taskRef:
         resolver: cluster
         params:
-        - name: kind
-          value: task
-        - name: name
-          value: maven
-        - name: namespace
-          value: openshift-pipelines
+          - name: kind
+            value: task
+          - name: name
+            value: maven
+          - name: namespace
+            value: openshift-pipelines
       workspaces:
         - name: source
           workspace: git-source
@@ -71,24 +71,24 @@ spec:
       taskRef:
         resolver: cluster
         params:
-        - name: kind
-          value: task
-        - name: name
-          value: buildah
-        - name: namespace
-          value: openshift-pipelines
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
       workspaces:
         - name: source
           workspace: git-source
       runAfter:
         - compile
       params:
-      - name: IMAGE
-        value: $(params.image_dest_url):latest
-      - name: DOCKERFILE
-        value: src/main/docker/Dockerfile.jvm
-      - name: BUILD_EXTRA_ARGS
-        value: "--label=COMMIT=$(tasks.generate-id.results.short_commit) --label=BUILD_UID=$(tasks.generate-id.results.build_uid)"
+        - name: IMAGE
+          value: $(params.image_dest_url):latest
+        - name: DOCKERFILE
+          value: src/main/docker/Dockerfile.jvm
+        - name: BUILD_EXTRA_ARGS
+          value: "--label=COMMIT=$(tasks.generate-id.results.short_commit) --label=BUILD_UID=$(tasks.generate-id.results.build_uid)"
     - name: tag-image
       taskRef:
         name: push-image
