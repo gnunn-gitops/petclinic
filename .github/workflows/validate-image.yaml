@@ -1,0 +1,26 @@
+name: Validate Image
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v7
+      - name: Get Image
+        id: get-image
+        run: |
+          export PETCLINIC_IMAGE_URL=$(kustomize build apps/petclinic/base | yq '. | select(.kind == "Rollout" and .metadata.name == "petclinic") | .spec.template.spec.containers[].image' | tr -d '"')
+          echo "Testing image: $PETCLINIC_IMAGE_URL"
+          echo "petclinic_image=$PETCLINIC_IMAGE_URL" >> $GITHUB_OUTPUT
+      - name: Run EC Validator
+        uses: conforma/action-validate-image@v1.0.18
+        with:
+          image: ${{ steps.get-image.outputs.petclinic_image }}"
+          key: ${{ secrets.QUAY_IO }}
+          policy: github.com/conforma/config//slsa3
+          extra-params: --ignore-rekor
