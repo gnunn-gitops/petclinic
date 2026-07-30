@@ -20,7 +20,7 @@ jobs:
           echo "Testing tag: $PETCLINIC_TAG"
           echo -n "petclinic_tag=$PETCLINIC_TAG" >> $GITHUB_OUTPUT
       - name: Run Quay Vulnerability Check
-        uses: atilsensalduz/quay-image-vulnerability-check-action@v1.0.1
+        uses: atilsensalduz/quay-image-vulnerability-check-action@v0.9.0
         with:
           organization: gnunn
           repository: quarkus-petclinic
