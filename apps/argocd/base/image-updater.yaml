@@ -5,7 +5,7 @@ metadata:
   namespace: petclinic-ci
 spec:
   applicationRefs:
-    - namePattern: "petclinic-*"  # Select applications matching this pattern
+    - namePattern: "petclinic-*"
       images:
         - alias: "quarkus-petclinic"
           imageName: "quay.io/gnunn/quarkus-petclinic:ddf1cd6-3H6MBhb6WwzGBsm1lSi4i6kbymH"
