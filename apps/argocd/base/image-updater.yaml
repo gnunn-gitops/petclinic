@@ -21,4 +21,7 @@ spec:
         method: "git:secret:petclinic-argocd/github"
         gitConfig:
           branch: "main"
+          pullRequest:
+            github: {}
+          repository: "https://github.com/gnunn-gitops/petclinic.git"
           writeBackTarget: "kustomization:/apps/petclinic/base"
