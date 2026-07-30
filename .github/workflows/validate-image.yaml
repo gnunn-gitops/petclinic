@@ -5,7 +5,7 @@ on:
       - main
 
 jobs:
-  build:
+  validate-image:
     runs-on: ubuntu-latest
 
     steps:
