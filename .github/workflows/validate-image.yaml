@@ -15,7 +15,7 @@ jobs:
         id: get-image
         run: |
           export PETCLINIC_IMAGE_URL=$(kustomize build apps/petclinic/base | yq '. | select(.kind == "Rollout" and .metadata.name == "petclinic") | .spec.template.spec.containers[].image' | tr -d '"')
-          PETCLINIC_TAG=$(echo -n "${PETCLINIC_IMAGE_URL##*:}'")
+          PETCLINIC_TAG=$(echo -n "${PETCLINIC_IMAGE_URL##*:}")
           echo "Testing image: $PETCLINIC_IMAGE_URL"
           echo "Testing tag: $PETCLINIC_TAG"
           echo -n "petclinic_tag=$PETCLINIC_TAG" >> $GITHUB_OUTPUT
