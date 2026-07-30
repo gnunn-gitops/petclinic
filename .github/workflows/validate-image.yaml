@@ -24,7 +24,7 @@ jobs:
         with:
           organization: gnunn
           repository: quarkus-petclinic
-          image_tag: ${{ steps.get-image.outputs.petclinic_tag }}"
+          image_tag: ${{ steps.get-image.outputs.petclinic_tag }}
           quay_token: ${{ secrets.QUAY_IO }}
           severities: "High, Critical"
           exit_code: "1"
