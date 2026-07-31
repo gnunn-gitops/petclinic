@@ -7,7 +7,7 @@ on:
       - "environment/dev"
   push:
     branches:
-      - "main"
+      - "*"
 jobs:
   validate-image:
     runs-on: ubuntu-latest
