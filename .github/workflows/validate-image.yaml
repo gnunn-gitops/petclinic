@@ -2,8 +2,12 @@ name: Validate Image
 on:
   pull_request:
     branches:
-      - "*"
-
+      - "environment/prod"
+      - "environment/stage"
+      - "environment/dev"
+  push:
+    branches:
+      - "main"
 jobs:
   validate-image:
     runs-on: ubuntu-latest

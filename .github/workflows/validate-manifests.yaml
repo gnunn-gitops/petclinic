@@ -2,10 +2,11 @@ name: Validate Manifests
 on:
   pull_request:
     branches:
-      - "*"
+      - "environment/prod"
+      - "environment/stage"
+      - "environment/dev"
   push:
     branches:
-      - "*-next"
       - "main"
 
 jobs:
