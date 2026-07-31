@@ -1,8 +1,8 @@
 {
-  "drySha": "d8580b3e4c332d552b1e0d12e70750fa1dc3b4b0",
+  "drySha": "b54fb78929d41e31c56cd1990333e7bb1de0fb4d",
   "repoURL": "https://github.com/org/repo",
-  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-07-29T14:54:07-07:00",
-  "subject": "Hydrate all envs\n",
-  "body": "\n"
+  "author": "Gerald Nunn <gnunn1@users.noreply.github.com>",
+  "date": "2026-07-31T09:29:34-07:00",
+  "subject": "Merge pull request #36 from gnunn-gitops/image-updater-petclinic-argocd-petclinic-dev-2251fd4bc1cdca6e5e9b09a91c3cf354954427f9f64b5b0946c62d8d5e3fd68c\n",
+  "body": "build: automatic update of petclinic-dev\n"
 }
