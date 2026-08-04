@@ -7,12 +7,12 @@ spec:
     - key: argocd-health-petclinic
     - key: acs-policy-violation
   environments:
-  - autoMerge: true
-    branch: environment/dev
-  - autoMerge: false
-    branch: environment/stage
-  - autoMerge: false
-    branch: environment/prod
+    - autoMerge: true
+      branch: environment/dev
+    - autoMerge: true
+      branch: environment/stage
+    - autoMerge: true
+      branch: environment/prod
   gitRepositoryRef:
     name: petclinic
 ---
