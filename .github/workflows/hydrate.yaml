@@ -18,10 +18,10 @@ jobs:
         with:
           app-id: ${{ secrets.GITOPS_ACTION_TOKEN_ID }}
           private-key: ${{ secrets.GITOPS_ACTION_TOKEN }}
-      # - name: Configure Git
-      #   run: |
-      #     git config --global user.name "github-actions[bot]"
-      #     git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Code Checkout
         uses: actions/checkout@v7
       - name: Create and push dev-next branch
@@ -39,10 +39,10 @@ jobs:
         with:
           app-id: ${{ secrets.GITOPS_ACTION_TOKEN_ID }}
           private-key: ${{ secrets.GITOPS_ACTION_TOKEN }}
-      # - name: Configure Git
-      #   run: |
-      #     git config --global user.name "github-actions[bot]"
-      #     git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Code Checkout
         uses: actions/checkout@v7
       - name: Create and push stage-next branch
@@ -60,10 +60,10 @@ jobs:
         with:
           app-id: ${{ secrets.GITOPS_ACTION_TOKEN_ID }}
           private-key: ${{ secrets.GITOPS_ACTION_TOKEN }}
-      # - name: Configure Git
-      #   run: |
-      #     git config --global user.name "github-actions[bot]"
-      #     git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Code Checkout
         uses: actions/checkout@v7
       - name: Create and push stage-next branch
