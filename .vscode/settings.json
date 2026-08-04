@@ -1,7 +1,0 @@
-{
-    "files.insertFinalNewline": true,
-    "files.trimFinalNewlines": true,
-    "editor.renderWhitespace": "trailing",
-    "files.trimTrailingWhitespace": true,
-    "editor.formatOnSave": true
-}
