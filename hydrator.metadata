@@ -1,8 +1,8 @@
 {
-  "drySha": "185ba49d4c64313f7ca199f5dfda466759b80bc8",
+  "drySha": "1dfd03d1f1d4ce39f08fddac99ef84d3bbe42628",
   "repoURL": "https://github.com/org/repo",
-  "author": "argocd-image-updater <noreply@argoproj.io>",
-  "date": "2026-08-04T17:17:25Z",
-  "subject": "build: automatic update of petclinic-stage\n",
-  "body": "updates image gnunn/quarkus-petclinic tag 'a2bdaba-3HCA8KOSYGBprpf67vg2fh1CuQ9' to 'a2bdaba-3HSa5JzxEZJMHpbAda5iHLyk4Uo'\n\n"
+  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
+  "date": "2026-08-04T13:07:15-07:00",
+  "subject": "Tweak hydration to leave github workflows in play\n",
+  "body": "\n"
 }
