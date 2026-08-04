@@ -1,8 +1,8 @@
 {
-  "drySha": "280f80d5a897fcf02caa084a72fe35ed48ecdfe5",
+  "drySha": "36c0ec76ef2e66d82d7a7a26a04187a9050ebc9b",
   "repoURL": "https://github.com/org/repo",
-  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-08-04T13:51:02-07:00",
-  "subject": "Trigger hydration\n",
-  "body": "\n"
+  "author": "argocd-image-updater <noreply@argoproj.io>",
+  "date": "2026-08-04T21:16:53Z",
+  "subject": "build: automatic update of petclinic-stage\n",
+  "body": "updates image gnunn/quarkus-petclinic tag 'a2bdaba-3HCA8KOSYGBprpf67vg2fh1CuQ9' to 'a2bdaba-3HT3Dqdy697jPnvhn9iwWgqOoH3'\n\n"
 }
