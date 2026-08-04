@@ -35,7 +35,7 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
       - name: Create and push dev-next branch
         run: |
-          ./scripts/hydrate.sh dev
+          .github/scripts/hydrate.sh dev
 
   hydrate-stage:
     runs-on: ubuntu-latest
@@ -63,7 +63,7 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
       - name: Create and push stage-next branch
         run: |
-          ./scripts/hydrate.sh stage
+          .github/scripts/hydrate.sh stage
 
   hydrate-prod:
     runs-on: ubuntu-latest
@@ -91,4 +91,4 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
       - name: Create and push stage-next branch
         run: |
-          ./scripts/hydrate.sh prod
+          .github/scripts/hydrate.sh prod
