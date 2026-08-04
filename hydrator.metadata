@@ -1,0 +1,8 @@
+{
+  "drySha": "6dc9fcf28a6b9da5a2ff26d219e76213a470a1cd",
+  "repoURL": "https://github.com/org/repo",
+  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
+  "date": "2026-08-04T14:05:09-07:00",
+  "subject": "Use eval to workaround pre-parsing of script for extended glob\n",
+  "body": "\n"
+}

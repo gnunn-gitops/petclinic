@@ -1,0 +1,46 @@
+name: Validate Manifests
+on:
+  pull_request:
+    branches:
+      # - "environment/prod"
+      # - "environment/stage"
+      # - "environment/dev"
+      - "*"
+
+  push:
+    branches:
+      # - "main"
+      # - "environment/*-next"
+      - "*"
+
+jobs:
+  lint-yaml:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v7
+      - name: Validate YAML
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          format: github
+          config_file: .github/.yamllint.yaml
+  validate-manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v7
+      - name: Setup Kubeconform
+        uses: bmuschko/setup-kubeconform@v1
+        with:
+          version: "latest"
+      - name: Verify Kustomize CLI Installation
+        run: |
+          which kustomize
+          kustomize version
+      - name: Verify Helm CLI Installation
+        run: |
+          which helm
+          helm version
+      - name: Validate Manifests
+        run: |
+          .github/scripts/validate_manifests.sh
