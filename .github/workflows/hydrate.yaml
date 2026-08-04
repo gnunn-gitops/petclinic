@@ -18,10 +18,17 @@ jobs:
         with:
           app-id: ${{ secrets.GITOPS_ACTION_TOKEN_ID }}
           private-key: ${{ secrets.GITOPS_ACTION_TOKEN }}
-      - name: Configure Git
-        run: |
-          git config --global user.name "gnunn-gitops-app"
-          git config --global user.email "gnunn-gitops-app@users.noreply.github.com"
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      - run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+          gh auth setup-git
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
       - name: Code Checkout
         uses: actions/checkout@v7
         with:
@@ -41,10 +48,17 @@ jobs:
         with:
           app-id: ${{ secrets.GITOPS_ACTION_TOKEN_ID }}
           private-key: ${{ secrets.GITOPS_ACTION_TOKEN }}
-      - name: Configure Git
-        run: |
-          git config --global user.name "gnunn-gitops-app"
-          git config --global user.email "gnunn-gitops-app@users.noreply.github.com"
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      - run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+          gh auth setup-git
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
       - name: Code Checkout
         uses: actions/checkout@v7
         with:
@@ -64,10 +78,17 @@ jobs:
         with:
           app-id: ${{ secrets.GITOPS_ACTION_TOKEN_ID }}
           private-key: ${{ secrets.GITOPS_ACTION_TOKEN }}
-      - name: Configure Git
-        run: |
-          git config --global user.name "gnunn-gitops-app"
-          git config --global user.email "gnunn-gitops-app@users.noreply.github.com"
+      - name: Get GitHub App User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      - run: |
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+          gh auth setup-git
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
       - name: Code Checkout
         uses: actions/checkout@v7
         with:
