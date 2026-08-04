@@ -4,18 +4,24 @@ on:
     branches:
       - "main"
     paths:
-      - 'apps/petclinic/**'
-      - 'apps/petclinic-db/**'
-      - 'environments/**/**'
+      - "apps/petclinic/**"
+      - "apps/petclinic-db/**"
+      - "environments/**/**"
 
 jobs:
   hydrate-dev:
     runs-on: ubuntu-latest
     steps:
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GITOPS_ACTION_TOKEN_ID }}
+          private-key: ${{ secrets.GITOPS_ACTION_TOKEN }}
+      # - name: Configure Git
+      #   run: |
+      #     git config --global user.name "github-actions[bot]"
+      #     git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Code Checkout
         uses: actions/checkout@v7
       - name: Create and push dev-next branch
@@ -25,10 +31,16 @@ jobs:
   hydrate-stage:
     runs-on: ubuntu-latest
     steps:
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GITOPS_ACTION_TOKEN_ID }}
+          private-key: ${{ secrets.GITOPS_ACTION_TOKEN }}
+      # - name: Configure Git
+      #   run: |
+      #     git config --global user.name "github-actions[bot]"
+      #     git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Code Checkout
         uses: actions/checkout@v7
       - name: Create and push stage-next branch
@@ -38,10 +50,16 @@ jobs:
   hydrate-prod:
     runs-on: ubuntu-latest
     steps:
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GITOPS_ACTION_TOKEN_ID }}
+          private-key: ${{ secrets.GITOPS_ACTION_TOKEN }}
+      # - name: Configure Git
+      #   run: |
+      #     git config --global user.name "github-actions[bot]"
+      #     git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Code Checkout
         uses: actions/checkout@v7
       - name: Create and push stage-next branch
