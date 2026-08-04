@@ -64,6 +64,7 @@ if [ "${BRANCH_EXISTS}" = "true" ]; then
 fi
 
 NEW_GITHUB_WORKFLOW=$(mktemp)
+mkdir -p $NEW_GITHUB_WORKFLOW/.github
 cp -r .github $NEW_GITHUB_WORKFLOW/.github
 
 # Compare rendered output
