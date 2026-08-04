@@ -1,0 +1,41 @@
+name: Validate Image
+on:
+  pull_request:
+    branches:
+      - "environment/prod"
+      - "environment/stage"
+      - "environment/dev"
+  push:
+    branches:
+      - "main"
+      - "environment/*-next"
+
+jobs:
+  validate-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v7
+      - name: Get Image
+        id: get-image
+        run: |
+          export PETCLINIC_IMAGE_URL=$(kustomize build apps/petclinic/base | yq '. | select(.kind == "Rollout" and .metadata.name == "petclinic") | .spec.template.spec.containers[].image' | tr -d '"')
+          PETCLINIC_TAG=$(echo -n "${PETCLINIC_IMAGE_URL##*:}")
+          echo "Testing image: $PETCLINIC_IMAGE_URL"
+          echo "Testing tag: $PETCLINIC_TAG"
+          echo -n "petclinic_tag=$PETCLINIC_TAG" >> $GITHUB_OUTPUT
+      - name: Run Quay Vulnerability Check
+        uses: atilsensalduz/quay-image-vulnerability-check-action@v0.9.0
+        with:
+          organization: gnunn
+          repository: quarkus-petclinic
+          image_tag: ${{ steps.get-image.outputs.petclinic_tag }}
+          quay_token: ${{ secrets.QUAY_IO }}
+          #severities: "High, Critical"
+          severities: "Critical"
+          exit_code: "1"
+
+      - name: Generate Report on Action Summary
+        if: always()
+        run: |
+          cat vulnerabilities_report.md >> $GITHUB_STEP_SUMMARY
