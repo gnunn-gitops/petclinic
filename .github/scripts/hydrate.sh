@@ -84,8 +84,10 @@ else
     git checkout -b ${PROPOSED_BRANCH} origin/${PROPOSED_BRANCH} 2>/dev/null || \
     git checkout --orphan ${PROPOSED_BRANCH}
 
-  # Clear existing files and copy new manifests
-  git rm -rf . 2>/dev/null || true
+  # Clear existing files and copy new manifests but leave .github folder in place for validation
+  shopt -s extglob
+  git rm -rf !.github 2>/dev/null || true
+  shopt -u extglob
 
   cp ${NEW_MANIFESTS} manifests.yaml
 
