@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate GitHub App Token
-        id: generate-token
+        id: app-token
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.GITOPS_ACTION_TOKEN_ID }}
@@ -23,11 +23,11 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         with:
-          token: ${{ slots.generate-token.outputs.token }}
+          token: ${{ steps.app-token.outputs.token }}
       - name: Code Checkout
         uses: actions/checkout@v7
         with:
-          token: ${{ slots.generate-token.outputs.token }}
+          token: ${{ steps.app-token.outputs.token }}
       - name: Create and push dev-next branch
         run: |
           ./scripts/hydrate.sh dev
@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate GitHub App Token
-        id: generate-token
+        id: app-token
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.GITOPS_ACTION_TOKEN_ID }}
@@ -46,11 +46,11 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         with:
-          token: ${{ slots.generate-token.outputs.token }}
+          token: ${{ steps.app-token.outputs.token }}
       - name: Code Checkout
         uses: actions/checkout@v7
         with:
-          token: ${{ slots.generate-token.outputs.token }}
+          token: ${{ steps.app-token.outputs.token }}
       - name: Create and push stage-next branch
         run: |
           ./scripts/hydrate.sh stage
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate GitHub App Token
-        id: generate-token
+        id: app-token
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.GITOPS_ACTION_TOKEN_ID }}
@@ -69,11 +69,11 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         with:
-          token: ${{ slots.generate-token.outputs.token }}
+          token: ${{ steps.app-token.outputs.token }}
       - name: Code Checkout
         uses: actions/checkout@v7
         with:
-          token: ${{ slots.generate-token.outputs.token }}
+          token: ${{ steps.app-token.outputs.token }}
       - name: Create and push stage-next branch
         run: |
           ./scripts/hydrate.sh prod
