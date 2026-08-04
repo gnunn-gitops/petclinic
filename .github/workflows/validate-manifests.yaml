@@ -2,16 +2,13 @@ name: Validate Manifests
 on:
   pull_request:
     branches:
-      # - "environment/prod"
-      # - "environment/stage"
-      # - "environment/dev"
-      - "*"
-
+      - "environment/prod"
+      - "environment/stage"
+      - "environment/dev"
   push:
     branches:
-      # - "main"
-      # - "environment/*-next"
-      - "*"
+      - "main"
+      - "environment/*-next"
 
 jobs:
   lint-yaml:
