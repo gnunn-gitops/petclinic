@@ -63,8 +63,7 @@ if [ "${BRANCH_EXISTS}" = "true" ]; then
   git show origin/${PROPOSED_BRANCH}:manifests.yaml > ${CURRENT_MANIFESTS} 2>/dev/null || true
 fi
 
-NEW_GITHUB_WORKFLOW=$(mktemp)
-mkdir -p $NEW_GITHUB_WORKFLOW/.github
+NEW_GITHUB_WORKFLOW=$(mktemp -d)
 cp -r .github $NEW_GITHUB_WORKFLOW/.github
 
 # Compare rendered output
