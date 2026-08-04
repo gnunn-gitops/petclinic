@@ -63,6 +63,9 @@ if [ "${BRANCH_EXISTS}" = "true" ]; then
   git show origin/${PROPOSED_BRANCH}:manifests.yaml > ${CURRENT_MANIFESTS} 2>/dev/null || true
 fi
 
+NEW_GITHUB_WORKFLOW=$(mktemp)
+cp -r .github $NEW_GITHUB_WORKFLOW/.github
+
 # Compare rendered output
 if [ "${BRANCH_EXISTS}" = "true" ] && diff -q ${NEW_MANIFESTS} ${CURRENT_MANIFESTS} > /dev/null 2>&1; then
   #
@@ -85,11 +88,10 @@ else
     git checkout --orphan ${PROPOSED_BRANCH}
 
   # Clear existing files and copy new manifests but leave .github folder in place for validation
-  shopt -s extglob
-  eval 'git rm -rf !(.github) 2>/dev/null || true'
-  shopt -u extglob
+  git rm -rf . 2>/dev/null || true
 
   cp ${NEW_MANIFESTS} manifests.yaml
+  cp -r $NEW_GITHUB_WORKFLOW/.github .github
 
   # Create hydrator.metadata with full commit info
   cat > hydrator.metadata << EOF
