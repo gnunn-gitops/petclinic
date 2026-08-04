@@ -1,4 +1,4 @@
-name: Hydrate Dev Manifests
+name: Hydrate Manifests
 on:
   push:
     branches:

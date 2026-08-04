@@ -85,12 +85,7 @@ else
     git checkout --orphan ${PROPOSED_BRANCH}
 
   # Clear existing files and copy new manifests
-  #git rm -rf . 2>/dev/null || true
-  git rm -rf .vscode 2>/dev/null || true
-  git rm -rf apps 2>/dev/null || true
-  git rm -rf bootstrap 2>/dev/null || true
-  git rm -rf environments 2>/dev/null || true
-  git rm -rf maven-image 2>/dev/null || true
+  git rm -rf . 2>/dev/null || true
 
   cp ${NEW_MANIFESTS} manifests.yaml
 

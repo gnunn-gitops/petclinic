@@ -23,7 +23,7 @@ jobs:
         uses: ibiqlik/action-yamllint@v3
         with:
           format: github
-          config_file: .yamllint.yaml
+          config_file: .github/.yamllint.yaml
   validate-manifests:
     runs-on: ubuntu-latest
     steps:
@@ -43,4 +43,4 @@ jobs:
           helm version
       - name: Validate Manifests
         run: |
-          ./scripts/validate_manifests.sh
+          .github/scripts/validate_manifests.sh
