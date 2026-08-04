@@ -9,7 +9,7 @@ on:
   push:
     branches:
       - "main"
-      - "environments/*-next"
+      - "environment/*-next"
 
 jobs:
   lint-yaml:
