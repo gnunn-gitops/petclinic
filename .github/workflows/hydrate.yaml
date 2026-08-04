@@ -20,8 +20,8 @@ jobs:
           private-key: ${{ secrets.GITOPS_ACTION_TOKEN }}
       - name: Configure Git
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "gnunn-gitops-app"
+          git config --global user.email "gnunn-gitops-app@users.noreply.github.com"
       - name: Code Checkout
         uses: actions/checkout@v7
         with:
@@ -29,6 +29,8 @@ jobs:
       - name: Create and push dev-next branch
         run: |
           ./scripts/hydrate.sh dev
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
   hydrate-stage:
     runs-on: ubuntu-latest
@@ -41,8 +43,8 @@ jobs:
           private-key: ${{ secrets.GITOPS_ACTION_TOKEN }}
       - name: Configure Git
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "gnunn-gitops-app"
+          git config --global user.email "gnunn-gitops-app@users.noreply.github.com"
       - name: Code Checkout
         uses: actions/checkout@v7
         with:
@@ -50,6 +52,8 @@ jobs:
       - name: Create and push stage-next branch
         run: |
           ./scripts/hydrate.sh stage
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
   hydrate-prod:
     runs-on: ubuntu-latest
@@ -62,8 +66,8 @@ jobs:
           private-key: ${{ secrets.GITOPS_ACTION_TOKEN }}
       - name: Configure Git
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "gnunn-gitops-app"
+          git config --global user.email "gnunn-gitops-app@users.noreply.github.com"
       - name: Code Checkout
         uses: actions/checkout@v7
         with:
@@ -71,3 +75,5 @@ jobs:
       - name: Create and push stage-next branch
         run: |
           ./scripts/hydrate.sh prod
+        with:
+          token: ${{ steps.app-token.outputs.token }}
