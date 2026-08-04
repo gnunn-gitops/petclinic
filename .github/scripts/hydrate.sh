@@ -86,7 +86,7 @@ else
 
   # Clear existing files and copy new manifests but leave .github folder in place for validation
   shopt -s extglob
-  git rm -rf !.github 2>/dev/null || true
+  git rm -rf !(.github) 2>/dev/null || true
   shopt -u extglob
 
   cp ${NEW_MANIFESTS} manifests.yaml
