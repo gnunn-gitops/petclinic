@@ -5,10 +5,11 @@ on:
       - "environment/prod"
       - "environment/stage"
       - "environment/dev"
+      - "main"
+
   push:
     branches:
       - "main"
-      - "environment/*-next"
 
 jobs:
   lint-yaml:
