@@ -15,15 +15,3 @@ spec:
       branch: environment/prod
   gitRepositoryRef:
     name: petclinic
----
-apiVersion: promoter.argoproj.io/v1alpha1
-kind: ArgoCDCommitStatus
-metadata:
-  name: petclinic
-spec:
-  key: argocd-health-petclinic
-  promotionStrategyRef:
-    name: petclinic
-  applicationSelector:
-    matchLabels:
-      app: petclinic
