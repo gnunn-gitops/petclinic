@@ -5,10 +5,11 @@ on:
       - "environment/prod"
       - "environment/stage"
       - "environment/dev"
+      - "main"
+
   push:
     branches:
       - "main"
-      - "environment/*-next"
 
 jobs:
   validate-image:
@@ -24,6 +25,46 @@ jobs:
           echo "Testing image: $PETCLINIC_IMAGE_URL"
           echo "Testing tag: $PETCLINIC_TAG"
           echo -n "petclinic_tag=$PETCLINIC_TAG" >> $GITHUB_OUTPUT
+      - name: Wait for Quay.io Security Scan to Complete
+        env:
+          QUAY_TOKEN: ${{ secrets.QUAY_IO }}
+          # Format: organization/repository or username/repository
+          REPO_PATH: "gnunn/quarkus-petclinic"
+          # Use either the Image Tag (e.g., v1.0.0) or the SHA Digest
+          IMAGE_REF: "${{ steps.get-image.outputs.petclinic_tag }}"
+        run: |
+          echo "Checking Quay.io security scan status for ${REPO_PATH}:${IMAGE_REF}..."
+
+          TIMEOUT=600 # Max wait time in seconds (10 minutes)
+          INTERVAL=15 # Time to wait between retries
+          ELAPSED=0
+          STATUS="queued"
+
+          while [[ "$STATUS" != "scanned" ]]; do
+            if [ $ELAPSED -ge $TIMEOUT ]; then
+              echo "::error::Timed out waiting for Quay security scan to complete after ${TIMEOUT} seconds."
+              exit 1
+            fi
+
+            # Query Quay API for the specific manifest security status
+            RESPONSE=$(curl -s -H "Authorization: Bearer $QUAY_TOKEN" \
+              "https://quay.io/{REPO_PATH}/manifest/${IMAGE_REF}/security?vulnerabilities=true")
+
+            # Extract the status field using jq
+            STATUS=$(echo "$RESPONSE" | jq -r '.status // "queued"')
+
+            if [[ "$STATUS" == "scanned" ]]; then
+              echo "Quay security scan complete!"
+              break
+            elif [[ "$STATUS" == "failed" ]]; then
+              echo "::error::Quay security scanner reported a failed index status."
+              exit 1
+            else
+              echo "Current scan status: [${STATUS}]. Retrying in ${INTERVAL} seconds... (${ELAPSED}/${TIMEOUT}s)"
+              sleep $INTERVAL
+              ELAPSED=$((ELAPSED + INTERVAL))
+            fi
+          done
       - name: Run Quay Vulnerability Check
         uses: atilsensalduz/quay-image-vulnerability-check-action@v0.9.0
         with:
