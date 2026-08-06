@@ -6,6 +6,9 @@ spec:
   environments:
     - autoMerge: true
       branch: environment/dev
+      activeCommitStatuses:
+        - key: argocd-health-petclinic
+        - key: acs-policy-violation
     - autoMerge: true
       branch: environment/stage
       activeCommitStatuses:
