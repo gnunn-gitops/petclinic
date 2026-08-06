@@ -10,7 +10,7 @@ labels:
       app.kubernetes.io/name: petclinic
       app.kubernetes.io/part-of: petclinic
       app.openshift.io/runtime-icon: quarkus
-      test: test
+      test: test2
 resources:
   - petclinic-svc.yaml
   - petclinic-route.yaml
