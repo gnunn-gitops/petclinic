@@ -1,8 +1,8 @@
 {
-  "drySha": "2868c8f9e9d51452a294bf1d8e3e9b9c5ec9a6df",
+  "drySha": "b9305bba17d456b0db0be1cb4f47881ea0d75fea",
   "repoURL": "https://github.com/org/repo",
-  "author": "argocd-image-updater <noreply@argoproj.io>",
-  "date": "2026-08-05T19:19:36Z",
-  "subject": "build: automatic update of petclinic-prod\n",
-  "body": "updates image gnunn/quarkus-petclinic tag 'a2bdaba-3HTA6s1jWx0hkLzKWzVT9rDs4rp' to 'a2bdaba-3HVdyEwzl6U7ZNX9hXmFNzyLuEF'\n\n"
+  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
+  "date": "2026-08-06T12:55:08-07:00",
+  "subject": "Test hydration\n",
+  "body": "\n"
 }
