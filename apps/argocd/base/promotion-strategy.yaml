@@ -11,7 +11,13 @@ spec:
       branch: environment/dev
     - autoMerge: true
       branch: environment/stage
+      activeCommitStatuses:
+        - key: argocd-health-petclinic
+        - key: acs-policy-violation
     - autoMerge: true
       branch: environment/prod
+      activeCommitStatuses:
+        - key: argocd-health-petclinic
+        - key: acs-policy-violation
   gitRepositoryRef:
     name: petclinic
