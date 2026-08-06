@@ -3,9 +3,6 @@ kind: PromotionStrategy
 metadata:
   name: petclinic
 spec:
-  activeCommitStatuses:
-    - key: argocd-health-petclinic
-    - key: acs-policy-violation
   environments:
     - autoMerge: true
       branch: environment/dev
