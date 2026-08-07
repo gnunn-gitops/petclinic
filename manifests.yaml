@@ -173,6 +173,63 @@ spec:
           claimName: petclinic-db
 ---
 apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  labels:
+    app: petclinic
+    app.kubernetes.io/component: petclinic
+    app.kubernetes.io/instance: petclinic
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/part-of: petclinic
+    app.openshift.io/runtime-icon: quarkus
+  name: smoke-test
+  namespace: petclinic-prod
+spec:
+  args:
+  - name: namespace
+  - name: route-name
+  - name: route-url
+  - name: api-token
+    valueFrom:
+      secretKeyRef:
+        key: token
+        name: monitor-auth-secret
+  metrics:
+  - count: 3
+    failureLimit: 0
+    interval: 20s
+    name: success-rate
+    provider:
+      prometheus:
+        address: https://thanos-querier.openshift-monitoring.svc.cluster.local:9091
+        headers:
+        - key: Authorization
+          value: Bearer {{args.api-token}}
+        insecure: true
+        query: |
+          irate(haproxy_backend_http_responses_total{exported_namespace='{{ args.namespace }}', route=~"{{ args.route-name }}", code="5xx"}[1m]) > 5 or on() vector(0)
+        timeout: 40
+    successCondition: result[0] == 0
+  - name: run-load
+    provider:
+      job:
+        spec:
+          backoffLimit: 1
+          template:
+            spec:
+              containers:
+              - args:
+                - siege -c 20 -d5 -t2M -v http://{{args.route-url}}
+                command:
+                - sh
+                - -c
+                image: quay.io/gnunn/tools:latest
+                name: siege
+              restartPolicy: Never
+---
+apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
   labels:
@@ -198,11 +255,18 @@ spec:
       stableService: petclinic-stable
       steps:
       - setWeight: 20
-      - pause:
-          duration: 10
-      - setWeight: 80
-      - pause:
-          duration: 10
+      - analysis:
+          args:
+          - name: namespace
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: route-name
+            value: petclinic-canary
+          - name: route-url
+            value: https://petclinic-canary-petclinic-prod.apps.home.ocplab.com/
+          templates:
+          - templateName: smoke-test
       - setWeight: 100
       trafficRouting:
         plugins:
