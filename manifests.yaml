@@ -1,3 +1,48 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: petclinic
+    app.kubernetes.io/component: petclinic
+    app.kubernetes.io/instance: petclinic
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/part-of: petclinic
+    app.openshift.io/runtime-icon: quarkus
+  name: monitor-auth-secret
+  namespace: petclinic-prod
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - monitor-auth-secret
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: petclinic
+    app.kubernetes.io/component: petclinic
+    app.kubernetes.io/instance: petclinic
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/part-of: petclinic
+    app.openshift.io/runtime-icon: quarkus
+  name: monitor-auth-secret
+  namespace: petclinic-prod
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: monitor-auth-secret
+subjects:
+- kind: ServiceAccount
+  name: argo-rollouts
+  namespace: rollout-manager
+---
 apiVersion: v1
 kind: Secret
 metadata:
