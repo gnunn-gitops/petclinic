@@ -4,5 +4,14 @@ kind: Kustomization
 namespace: petclinic-dev
 
 resources:
-- ../../../apps/petclinic-db/base
-- ../../../apps/petclinic/base
+  - ../../../apps/petclinic-db/base
+  - ../../../apps/petclinic/base
+
+patches:
+  - patch: |
+      - op: replace
+        path: /spec/strategy/canary/steps/1/analysis/args/2/value
+        value: https://petclinic-canary-petclinic-dev.apps.home.ocplab.com/
+    target:
+      kind: Rollout
+      name: petclinic

@@ -20,11 +20,20 @@ spec:
             routes:
               - petclinic
       steps:
-      - setWeight: 20
-      - pause: {duration: 10}
-      - setWeight: 80
-      - pause: {duration: 10}
-      - setWeight: 100
+        - setWeight: 20
+        - analysis:
+            templates:
+              - templateName: smoke-test
+            args:
+              - name: namespace
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.namespace
+              - name: route-name
+                value: petclinic-canary
+              - name: route-url
+                value: https://petclinic-canary-petclinic-dev.apps.home.ocplab.com/
+        - setWeight: 100
   template:
     metadata:
       annotations:
@@ -33,48 +42,48 @@ spec:
         app: petclinic
     spec:
       containers:
-      - image: quay.io/gnunn/quarkus-petclinic:latest
-        imagePullPolicy: Always
-        env:
-          - name: QUARKUS_DATASOURCE_JDBC_URL
-            value: jdbc:postgresql://petclinic-db:5432/petclinic
-          - name: QUARKUS_DATASOURCE_USERNAME
-            valueFrom:
-              secretKeyRef:
-                key: database-user
-                name: petclinic-db
-          - name: QUARKUS_DATASOURCE_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                key: database-password
-                name: petclinic-db
-        livenessProbe:
-          httpGet:
-            path: /q/health/live
-            port: 8080
-        readinessProbe:
-          httpGet:
-            path: /q/health/ready
-            port: 8080
-        startupProbe:
-          httpGet:
-            path: /q/health/started
-            port: 8080
-        name: petclinic
-        ports:
-        - containerPort: 8080
-          protocol: TCP
-        - containerPort: 8443
-          protocol: TCP
-        resources:
-          requests:
-            cpu: 200m
-            memory: 256Mi
-          limits:
-            cpu: 500m
-            memory: 512Mi
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
+        - image: quay.io/gnunn/quarkus-petclinic:latest
+          imagePullPolicy: Always
+          env:
+            - name: QUARKUS_DATASOURCE_JDBC_URL
+              value: jdbc:postgresql://petclinic-db:5432/petclinic
+            - name: QUARKUS_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: database-user
+                  name: petclinic-db
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-password
+                  name: petclinic-db
+          livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /q/health/ready
+              port: 8080
+          startupProbe:
+            httpGet:
+              path: /q/health/started
+              port: 8080
+          name: petclinic
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8443
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler

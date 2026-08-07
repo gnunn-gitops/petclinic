@@ -14,6 +14,7 @@ resources:
   - petclinic-svc.yaml
   - petclinic-route.yaml
   - petclinic-rollout.yaml
+  - smoke-test-analysis.yaml
 images:
   - name: quay.io/gnunn/quarkus-petclinic
     newName: quay.io/gnunn/quarkus-petclinic
