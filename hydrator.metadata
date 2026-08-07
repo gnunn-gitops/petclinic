@@ -1,8 +1,8 @@
 {
-  "drySha": "954b3357fdd2b807626440f22d94edf10d9c26d0",
+  "drySha": "1b1449fbeab373a26c8de601f8bd1d20f0e7faab",
   "repoURL": "https://github.com/org/repo",
-  "author": "argocd-image-updater <noreply@argoproj.io>",
-  "date": "2026-08-07T20:06:07Z",
-  "subject": "build: automatic update of petclinic-prod\n",
-  "body": "updates image gnunn/quarkus-petclinic tag 'a2bdaba-3HavBDojByt9WQTJF50sunzQ9Rf' to 'a2bdaba-3HbNuFoWb6lQ47z05PrzU1BWqRI'\n\n"
+  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
+  "date": "2026-08-07T13:16:41-07:00",
+  "subject": "Add missing secret to access monitoring stack\n",
+  "body": "\n"
 }
