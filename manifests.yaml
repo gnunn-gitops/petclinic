@@ -8,7 +8,6 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test: testing again
   name: petclinic-canary
   namespace: petclinic-stage
 spec:
@@ -49,7 +48,6 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test: testing again
   name: petclinic-stable
   namespace: petclinic-stage
 spec:
@@ -184,7 +182,6 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test: testing again
   name: petclinic
   namespace: petclinic-stage
 spec:
@@ -304,7 +301,6 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test: testing again
   name: petclinic
   namespace: petclinic-stage
 spec:
@@ -332,7 +328,6 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test: testing again
   name: petclinic-canary
   namespace: petclinic-stage
 spec:
