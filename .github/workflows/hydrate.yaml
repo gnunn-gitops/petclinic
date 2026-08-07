@@ -6,7 +6,7 @@ on:
     paths:
       - "apps/petclinic/**"
       - "apps/petclinic-db/**"
-      - "environments/**/**"
+      - "environments/**"
 
 jobs:
   hydrate-dev:

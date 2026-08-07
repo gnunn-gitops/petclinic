@@ -88,8 +88,10 @@ else
     git checkout --orphan ${PROPOSED_BRANCH}
 
   # Clear existing files and copy new manifests but leave .github folder in place for validation
+  echo "Deleting all files from ${PROPOSED_BRANCH}"
   git rm -rf . 2>/dev/null || true
 
+  echo "Coping manifests.yaml and .github/workflows from DRY branch to ${PROPOSED_BRANCH}"
   cp ${NEW_MANIFESTS} manifests.yaml
   cp -r $NEW_GITHUB_WORKFLOW/.github .github
 
@@ -105,13 +107,17 @@ else
 }
 EOF
 
-  # Commit
+  echo "List all files"
+  ls -lR
+
+  echo "Adding files and committing"
   git add -A
   git commit -m "Hydrate ${ENV} from ${DRY_SHA:0:7}"
 
   HYDRATED_SHA=$(git rev-parse HEAD)
 
   # Push branch, then update notes ref with retry for concurrent writers
+  echo "Pushing changes to git in ${PROPOSED_BRANCH}"
   git push origin ${PROPOSED_BRANCH}
   push_note_with_retry ${HYDRATED_SHA}
 
