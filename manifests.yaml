@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test: test3
+    test: testing again
   name: petclinic-canary
   namespace: petclinic-prod
 spec:
@@ -49,7 +49,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test: test3
+    test: testing again
   name: petclinic-stable
   namespace: petclinic-prod
 spec:
@@ -184,7 +184,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test: test3
+    test: testing again
   name: petclinic
   namespace: petclinic-prod
 spec:
@@ -233,7 +233,7 @@ spec:
             secretKeyRef:
               key: database-password
               name: petclinic-db
-        image: quay.io/gnunn/quarkus-petclinic:a2bdaba-3HYRfeawiNIvX4mqMI336tHLqfi
+        image: quay.io/gnunn/quarkus-petclinic:a2bdaba-3HarOOv2r62GxcwvF7vVZxJYshc
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
@@ -304,7 +304,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test: test3
+    test: testing again
   name: petclinic
   namespace: petclinic-prod
 spec:
@@ -332,7 +332,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test: test3
+    test: testing again
   name: petclinic-canary
   namespace: petclinic-prod
 spec:
