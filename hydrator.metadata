@@ -1,8 +1,8 @@
 {
-  "drySha": "686076c8288907593bd00f446b6d2c51ded9e82c",
+  "drySha": "f956250f1a57870db16fb762ae5e7e956cd11a23",
   "repoURL": "https://github.com/org/repo",
-  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-08-07T13:32:01-07:00",
-  "subject": "Add role and rolebinding so rollout-manager can access required secret\n",
-  "body": "\n"
+  "author": "argocd-image-updater <noreply@argoproj.io>",
+  "date": "2026-08-07T20:42:42Z",
+  "subject": "build: automatic update of petclinic-stage\n",
+  "body": "updates image gnunn/quarkus-petclinic tag 'a2bdaba-3HbNuFoWb6lQ47z05PrzU1BWqRI' to 'a2bdaba-3HbSUDnXUSItVG6r447vXBdWKel'\n\n"
 }
