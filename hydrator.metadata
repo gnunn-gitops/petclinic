@@ -1,8 +1,8 @@
 {
-  "drySha": "0062cc5dad1e6b26caccec04dca6ae470c12c76a",
+  "drySha": "8e0380b95f24a7451d52218220ac052cc7351233",
   "repoURL": "https://github.com/org/repo",
-  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-08-07T08:49:33-07:00",
-  "subject": "Remove bad label\n",
-  "body": "\n"
+  "author": "argocd-image-updater <noreply@argoproj.io>",
+  "date": "2026-08-07T16:08:53Z",
+  "subject": "build: automatic update of petclinic-dev\n",
+  "body": "updates image gnunn/quarkus-petclinic tag 'a2bdaba-3HarOOv2r62GxcwvF7vVZxJYshc' to 'a2bdaba-3HavBDojByt9WQTJF50sunzQ9Rf'\n\n"
 }
