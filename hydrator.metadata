@@ -1,8 +1,8 @@
 {
-  "drySha": "f20ea96da7e666e6cda8d9b35710006f4f43feec",
+  "drySha": "954b3357fdd2b807626440f22d94edf10d9c26d0",
   "repoURL": "https://github.com/org/repo",
-  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-08-07T09:49:32-07:00",
-  "subject": "Add analysis to rollouts\n",
-  "body": "\n"
+  "author": "argocd-image-updater <noreply@argoproj.io>",
+  "date": "2026-08-07T20:06:07Z",
+  "subject": "build: automatic update of petclinic-prod\n",
+  "body": "updates image gnunn/quarkus-petclinic tag 'a2bdaba-3HavBDojByt9WQTJF50sunzQ9Rf' to 'a2bdaba-3HbNuFoWb6lQ47z05PrzU1BWqRI'\n\n"
 }
