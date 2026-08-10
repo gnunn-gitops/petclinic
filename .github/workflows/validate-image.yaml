@@ -30,6 +30,7 @@ jobs:
         uses: conforma/action-validate-image@v1.0.421
         with:
           image: quay.io/gnunn/quarkus-petclinic:${{ steps.get-image.outputs.petclinic_tag }}
-          key: ${{ secrets.QUAY_IO }}
           policy: github.com/conforma/config//slsa3
           extra-params: --ignore-rekor
+          identity: tekton-builder@rhdp.com
+          issuer: https://sso.ocplab.com/realms/ocplab
