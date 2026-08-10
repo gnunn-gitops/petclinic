@@ -27,7 +27,7 @@ jobs:
           echo "Testing tag: $PETCLINIC_TAG"
           echo -n "petclinic_tag=$PETCLINIC_TAG" >> $GITHUB_OUTPUT
       - name: Run EC Validator
-        uses: conforma/action-validate-image@v1.0.18
+        uses: conforma/action-validate-image@v1.0.421
         with:
           image: quay.io/gnunn/quarkus-petclinic:${{ steps.get-image.outputs.petclinic_tag }}
           key: ${{ secrets.QUAY_IO }}
