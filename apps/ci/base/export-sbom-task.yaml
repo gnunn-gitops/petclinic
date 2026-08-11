@@ -1,0 +1,44 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: scan-export-sbom
+spec:
+  params:
+    - name: CENTRAL
+      type: string
+    - name: IMAGE
+      type: string
+    - default: https://server.apps.hub.ocplab.com/
+      name: cyclonedxHostUrl
+      type: string
+  results:
+    - description: The url location of the generated SBOM
+      name: sbomUrl
+  workspaces:
+    - name: ACS_TOKEN
+    - name: repository
+  steps:
+    - name: generate-sbom
+      image: registry.redhat.io/advanced-cluster-security/rhacs-roxctl-rhel9:4.11
+      script: >
+        export ROX_ENDPOINT=$(params.CENTRAL)
+        export ROX_API_TOKEN=$(cat $(workspaces.secret-volume.path)/token)
+        roxctl image sbom --image=$(params.IMAGE) > sbom.json
+      workingDir: /workspace/repository
+    - image: "ubi9/ubi"
+      name: export-sbom
+      resources:
+        requests:
+          memory: 1Gi
+      script: >
+        set +x
+
+        curl -X POST $(params.cyclonedxHostUrl)/api/v1/sbom -H "Content-Type: application/vnd.cyclonedx+json; version=1.4" -H "Accept: */*" -d @sbom.json -D /tmp/header.txt > /dev/null
+
+        LOCATION=$(cat /tmp/header.txt | grep location: | awk '{print $2}' | sed 's|http:|https:|g')
+
+        echo $LOCATION
+
+        printf "%s" "$LOCATION" > "$(results.sbomUrl.path)"
+
+      workingDir: /workspace/repository
