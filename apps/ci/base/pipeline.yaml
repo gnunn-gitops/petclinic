@@ -89,19 +89,6 @@ spec:
           value: src/main/docker/Dockerfile.hardened
         - name: BUILD_EXTRA_ARGS
           value: "--label=COMMIT=$(tasks.generate-id.results.short_commit) --label=BUILD_UID=$(tasks.generate-id.results.build_uid)"
-    - name: tag-image
-      taskRef:
-        name: push-image
-        kind: Task
-      runAfter:
-        - build
-      params:
-        - name: SRC_IMAGE
-          value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
-        - name: DEST_IMAGE
-          value: $(params.IMAGE_DEST_URL)
-        - name: DEST_TAGS
-          value: "$(tasks.generate-id.results.tag_id)"
     - name: generate-sbom
       taskRef:
         kind: Task
@@ -110,7 +97,7 @@ spec:
             value: task/acs-image-sbom/1.0/acs-image-sbom.yaml
         resolver: git
       runAfter:
-        - acs-check-image
+        - build
       params:
         - name: image
           value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
@@ -125,6 +112,19 @@ spec:
           workspace: acs-central
         - name: upload-sbom
           workspace: upload-sbom
+    - name: tag-image
+      taskRef:
+        name: push-image
+        kind: Task
+      runAfter:
+        - generate-sbom
+      params:
+        - name: SRC_IMAGE
+          value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
+        - name: DEST_IMAGE
+          value: $(params.IMAGE_DEST_URL)
+        - name: DEST_TAGS
+          value: "$(tasks.generate-id.results.tag_id)"
   workspaces:
     - name: git-source
     - name: acs-central
