@@ -10,7 +10,7 @@ spec:
     - name: SOURCE_GIT_URL
       type: string
       default: https://github.com/gnunn-gitops/quarkus-petclinic
-    - name: image_dest_url
+    - name: IMAGE_DEST_URL
       type: string
       description: External registry location to copy image to
       default: quay.io/gnunn/quarkus-petclinic
@@ -84,7 +84,7 @@ spec:
         - compile
       params:
         - name: IMAGE
-          value: $(params.image_dest_url):latest
+          value: $(params.IMAGE_DEST_URL):latest
         - name: DOCKERFILE
           value: src/main/docker/Dockerfile.hardened
         - name: BUILD_EXTRA_ARGS
@@ -97,10 +97,37 @@ spec:
         - build
       params:
         - name: SRC_IMAGE
-          value: $(params.image_dest_url)@$(tasks.build.results.IMAGE_DIGEST)
+          value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
         - name: DEST_IMAGE
-          value: $(params.image_dest_url)
+          value: $(params.IMAGE_DEST_URL)
         - name: DEST_TAGS
           value: "$(tasks.generate-id.results.tag_id)"
+    - name: generate-sbom
+      taskRef:
+        kind: Task
+        params:
+          - name: pathInRepo
+            value: task/acs-image-sbom/1.0/acs-image-sbom.yaml
+        resolver: git
+      runAfter:
+        - acs-check-image
+      params:
+        - name: image
+          value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
+        - name: cyclonedxHostUrl
+          value: https://server.apps.hub.ocplab.com
+      when:
+        - input: "$(workspaces.acs-central.bound)"
+          operator: in
+          values: ["true"]
+      workspaces:
+        - name: acs-central
+          workspace: acs-central
+        - name: upload-sbom
+          workspace: upload-sbom
   workspaces:
     - name: git-source
+    - name: acs-central
+      optional: true
+    - name: upload-sbom
+      optional: true
