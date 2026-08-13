@@ -63,17 +63,25 @@ spec:
           workspace: git-source
     - name: compile
       taskRef:
-        resolver: cluster
+        kind: Task
         params:
-          - name: kind
-            value: task
-          - name: name
-            value: maven
-          - name: namespace
-            value: openshift-pipelines
+          - name: pathInRepo
+            value: task/maven/1.0/maven.yaml
+        resolver: git
+      # taskRef:
+      #   resolver: cluster
+      #   params:
+      #     - name: kind
+      #       value: task
+      #     - name: name
+      #       value: maven
+      #     - name: namespace
+      #       value: openshift-pipelines
       workspaces:
         - name: source
           workspace: git-source
+        - name: m2_cache
+          workspace: m2-cache
       runAfter:
         - generate-id
       params:
@@ -215,6 +223,8 @@ spec:
           value: "$(context.pipeline.name)"
   workspaces:
     - name: git-source
+    - name: m2-cache
+      optional: true
     - name: acs-central
       optional: true
     - name: upload-sbom
