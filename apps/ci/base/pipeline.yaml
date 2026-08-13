@@ -80,8 +80,6 @@ spec:
       workspaces:
         - name: source
           workspace: git-source
-        - name: m2_cache
-          workspace: m2-cache
       runAfter:
         - generate-id
       params:
@@ -223,8 +221,6 @@ spec:
           value: "$(context.pipeline.name)"
   workspaces:
     - name: git-source
-    - name: m2-cache
-      optional: true
     - name: acs-central
       optional: true
     - name: upload-sbom
