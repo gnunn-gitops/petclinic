@@ -194,7 +194,7 @@ spec:
         kind: Task
       runAfter:
         - generate-sbom
-        - build
+        - verify-signature
       params:
         - name: SRC_IMAGE
           value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
