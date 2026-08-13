@@ -15,6 +15,18 @@ spec:
       description: External registry location to copy image to
       default: quay.io/gnunn/quarkus-petclinic
   tasks:
+    - name: acquire-lease
+      taskRef:
+        kind: Task
+        params:
+          - name: pathInRepo
+            value: task/acquire-lease/1.0/acquire-lease.yaml
+        resolver: git
+      params:
+        - name: lease-name
+          value: "$(context.pipeline.name)"
+        - name: owner
+          value: "$(context.pipelineRun.name)"
     - name: clone
       taskRef:
         resolver: cluster
@@ -25,6 +37,8 @@ spec:
             value: git-clone
           - name: namespace
             value: openshift-pipelines
+      runAfter:
+        - acquire-lease
       workspaces:
         - name: output
           workspace: git-source
@@ -89,6 +103,68 @@ spec:
           value: src/main/docker/Dockerfile.hardened
         - name: BUILD_EXTRA_ARGS
           value: "--label=COMMIT=$(tasks.generate-id.results.short_commit) --label=BUILD_UID=$(tasks.generate-id.results.build_uid)"
+    - name: verify-signature
+      taskRef:
+        kind: Task
+        params:
+          - name: pathInRepo
+            value: task/verify-signature/1.0/verify-signature.yaml
+        resolver: git
+      runAfter:
+        - build
+      params:
+        - name: tuf_url
+          value: https://tuf-trusted-artifact-signer.apps.hub.ocplab.com
+        - name: oidc_issuer_url
+          value: https://sso.ocplab.com/realms/ocplab
+        - name: fulcio_url
+          value: https://fulcio-server-trusted-artifact-signer.apps.hub.ocplab.com
+        - name: rekor_url
+          value: https://rekor-server-trusted-artifact-signer.apps.hub.ocplab.com
+        - name: certificate_identity
+          value: tekton-builder@rhdp.com
+        - name: image_url
+          value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
+    - name: acs-scan-image
+      taskRef:
+        kind: Task
+        params:
+          - name: pathInRepo
+            value: task/acs-image-scan/1.0/acs-image-scan.yaml
+        resolver: git
+      runAfter:
+        - verify-signature
+      params:
+        - name: output_format
+          value: table
+        - name: image
+          value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
+      when:
+        - input: "$(workspaces.acs-central.bound)"
+          operator: in
+          values: ["true"]
+      workspaces:
+        - name: acs-central
+          workspace: acs-central
+    - name: acs-check-image
+      taskRef:
+        kind: Task
+        params:
+          - name: pathInRepo
+            value: task/acs-image-check/1.0/acs-image-check.yaml
+        resolver: git
+      runAfter:
+        - acs-scan-image
+      params:
+        - name: image
+          value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
+      when:
+        - input: "$(workspaces.acs-central.bound)"
+          operator: in
+          values: ["true"]
+      workspaces:
+        - name: acs-central
+          workspace: acs-central
     - name: generate-sbom
       taskRef:
         kind: Task
@@ -97,7 +173,7 @@ spec:
             value: task/acs-image-sbom/1.0/acs-image-sbom.yaml
         resolver: git
       runAfter:
-        - build
+        - acs-check-image
       params:
         - name: image
           value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
@@ -118,6 +194,7 @@ spec:
         kind: Task
       runAfter:
         - generate-sbom
+        - build
       params:
         - name: SRC_IMAGE
           value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
@@ -125,6 +202,17 @@ spec:
           value: $(params.IMAGE_DEST_URL)
         - name: DEST_TAGS
           value: "$(tasks.generate-id.results.tag_id)"
+  finally:
+    - name: release-lease
+      taskRef:
+        kind: Task
+        params:
+          - name: pathInRepo
+            value: task/release-lease/1.0/release-lease.yaml
+        resolver: git
+      params:
+        - name: lease-name
+          value: "$(context.pipeline.name)"
   workspaces:
     - name: git-source
     - name: acs-central
