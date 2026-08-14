@@ -33,4 +33,9 @@ jobs:
             --certificate-identity "tekton-builder@rhdp.com" \
             --certificate-oidc-issuer "https://sso.ocplab.com/realms/ocplab" \
             --insecure-ignore-tlog=true \
+            --tuf-mirror=false \
             quay.io/gnunn/quarkus-petclinic:${{ steps.get-image.outputs.petclinic_tag }}
+        env:
+          # Disable Rekor and TUF network calls globally for this step
+          COSIGN_REKOR_DISABLED: "1"
+          COSIGN_TUF_DISABLED: "1"
