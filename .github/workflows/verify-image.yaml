@@ -32,4 +32,5 @@ jobs:
           cosign verify \
             --certificate-identity "tekton-builder@rhdp.com" \
             --certificate-oidc-issuer "https://sso.ocplab.com/realms/ocplab" \
+            --insecure-ignore-tlog=false \
             quay.io/gnunn/quarkus-petclinic:${{ steps.get-image.outputs.petclinic_tag }}
