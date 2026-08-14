@@ -1,16 +1,15 @@
 name: Validate Image
-# on:
-# pull_request:
-#   branches:
-#     - "environment/prod"
-#     - "environment/stage"
-#     - "environment/dev"
-#     - "main"
+on:
+  pull_request:
+    branches:
+      - "environment/prod"
+      - "environment/stage"
+      - "environment/dev"
+      - "main"
 
-# push:
-#   branches:
-#     - "main"
-#     - "environment/*-next"
+  push:
+    branches:
+      - "main"
 
 jobs:
   validate-image:
