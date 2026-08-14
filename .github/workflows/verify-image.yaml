@@ -1,4 +1,4 @@
-name: Validate Image
+name: Verify Image
 on:
   pull_request:
     branches:
@@ -15,6 +15,8 @@ jobs:
   validate-image:
     runs-on: ubuntu-latest
     steps:
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.5.0 # Use the latest stable version
       - name: Code Checkout
         uses: actions/checkout@v7
       - name: Get Image
@@ -25,11 +27,9 @@ jobs:
           echo "Testing image: $PETCLINIC_IMAGE_URL"
           echo "Testing tag: $PETCLINIC_TAG"
           echo -n "petclinic_tag=$PETCLINIC_TAG" >> $GITHUB_OUTPUT
-      - name: Run EC Validator
-        uses: conforma/action-validate-image@v1.0.421
-        with:
-          image: quay.io/gnunn/quarkus-petclinic:${{ steps.get-image.outputs.petclinic_tag }}
-          policy: github.com/conforma/config//slsa3
-          extra-params: --ignore-rekor
-          identity: tekton-builder@rhdp.com
-          issuer: https://sso.ocplab.com/realms/ocplab
+      - name: Verify Image Identity
+        run: |
+          cosign verify \
+            --certificate-identity "tekton-builder@rhdp.com" \
+            --certificate-oidc-issuer "https://sso.ocplab.com/realms/ocplab" \
+            quay.io/gnunn/quarkus-petclinic:${{ steps.get-image.outputs.petclinic_tag }}
