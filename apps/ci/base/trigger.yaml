@@ -19,19 +19,26 @@ spec:
           name: petclinic
         timeouts:
           pipeline: 1h0m0s
-      workspaces:
-        - name: git-source
-          persistentVolumeClaim:
-            claimName: source
-        - name: m2-cache
-          persistentVolumeClaim:
-            claimName: m2-cache
-        - name: acs-central
-          secret:
-            secretName: acs-central
-        - name: upload-sbom
-          secret:
-            secretName: upload-sbom
+        params:
+          - name: SOURCE_GIT_REVISION
+            value: master
+          - name: SOURCE_GIT_URL
+            value: https://github.com/redhat-developer-demos/quarkus-petclinic
+          - name: IMAGE_DEST_URL
+            value: quay.io/gnunn/quarkus-petclinic
+        workspaces:
+          - name: git-source
+            persistentVolumeClaim:
+              claimName: source
+          - name: m2-cache
+            persistentVolumeClaim:
+              claimName: m2-cache
+          - name: acs-central
+            secret:
+              secretName: acs-central
+          - name: upload-sbom
+            secret:
+              secretName: upload-sbom
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener

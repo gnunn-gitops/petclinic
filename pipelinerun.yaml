@@ -11,6 +11,8 @@ spec:
       value: master
     - name: SOURCE_GIT_URL
       value: https://github.com/redhat-developer-demos/quarkus-petclinic
+    - name: IMAGE_DEST_URL
+      value: quay.io/gnunn/quarkus-petclinic
   pipelineRef:
     name: petclinic
   taskRunTemplate:
