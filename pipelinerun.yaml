@@ -7,21 +7,26 @@ metadata:
   namespace: petclinic-ci
 spec:
   params:
-  - name: SOURCE_GIT_REVISION
-    value: master
-  - name: SOURCE_GIT_URL
-    value: https://github.com/redhat-developer-demos/quarkus-petclinic
+    - name: SOURCE_GIT_REVISION
+      value: master
+    - name: SOURCE_GIT_URL
+      value: https://github.com/redhat-developer-demos/quarkus-petclinic
   pipelineRef:
     name: petclinic
-  taskRunSpecs:
-  - pipelineTaskName: build
-    podTemplate:
-      hostUsers: false
   taskRunTemplate:
     serviceAccountName: pipeline
   timeouts:
     pipeline: 1h0m0s
   workspaces:
-  - name: git-source
-    persistentVolumeClaim:
-      claimName: source
+    - name: git-source
+      persistentVolumeClaim:
+        claimName: source
+    - name: m2-cache
+      persistentVolumeClaim:
+        claimName: m2-cache
+    - name: acs-central
+      secret:
+        secretName: acs-central
+    - name: upload-sbom
+      secret:
+        secretName: upload-sbom

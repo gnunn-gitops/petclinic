@@ -19,10 +19,19 @@ spec:
           name: petclinic
         timeouts:
           pipeline: 1h0m0s
-        workspaces:
+      workspaces:
         - name: git-source
           persistentVolumeClaim:
             claimName: source
+        - name: m2-cache
+          persistentVolumeClaim:
+            claimName: m2-cache
+        - name: acs-central
+          secret:
+            secretName: acs-central
+        - name: upload-sbom
+          secret:
+            secretName: upload-sbom
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
