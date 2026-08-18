@@ -1,0 +1,149 @@
+# Provided by Zach Aller on this Slack thread: https://cloud-native.slack.com/archives/C06NXPYQ06B/p1787067235240869
+#
+# Example WebRequestCommitStatus that gates promotion on GitHub check runs which are
+# not already modeled as CommitStatus keys on the PromotionStrategy.
+#
+# Use this as a catch-all for CI / branch-protection checks (for example Jenkins,
+# CodeQL, or org-wide workflows) that you have not wired up as their own
+# ArgoCDCommitStatus, GitCommitStatus, or WebRequestCommitStatus gate.
+#
+# Wire it into the PromotionStrategy (global or per-environment proposedCommitStatuses):
+#
+#   spec:
+#     proposedCommitStatuses:
+#       - key: github-unconfigured-required-checks
+#     environments:
+#       - branch: environments/prd
+#         proposedCommitStatuses:
+#           - key: github-unconfigured-required-checks
+#
+# Requires SCM auth via the PromotionStrategy GitRepository. Replace the hardcoded
+# org, repo, and GitHub API host in urlTemplate for your repository.
+#
+# Check names are matched against PromotionStrategy commit-status keys exactly.
+# If a GitHub check name differs from the promoter key (for example GitHub shows
+# "Argo CD / sync" but the key is "argocd-health"), it will still be validated here.
+# Align names where possible to avoid duplicate gating.
+#
+# response.output builds a human-readable message listing failed and in-progress
+# checks. Required checks that have not started yet do not appear in check-runs
+# and cannot be listed without a separate branch-protection API call.
+#
+apiVersion: promoter.argoproj.io/v1alpha1
+kind: WebRequestCommitStatus
+metadata:
+  name: github-unconfigured-required-checks
+spec:
+  promotionStrategyRef:
+    name: strategy
+  key: github-unconfigured-required-checks
+  reportOn: proposed
+  descriptionTemplate: >-
+    {{- $phase := .Phase -}}
+    {{- $message := "" -}}
+    {{- if .ResponseOutput -}}
+      {{- $message = index .ResponseOutput "message" | default "" -}}
+    {{- end -}}
+    {{- $sha := "" -}}
+    {{- range .PromotionStrategy.Status.Environments -}}
+      {{- if eq .Branch $.Branch -}}
+        {{- $sha = .Proposed.Hydrated.Sha | trunc 7 -}}
+      {{- end -}}
+    {{- end -}}
+    GitHub checks not configured in promotion strategy{{ if ne $sha "" }} ({{ $sha }}){{ end }}: {{ $phase -}}
+    {{- if ne $message "" }} — {{ $message }}{{ end -}}
+  urlTemplate: >-
+    https://github.com/api/v3/repos/gnunn-gitops/petclinic/commits/{{ range .PromotionStrategy.Status.Environments }}{{ if eq .Branch $.Branch }}{{ .Proposed.Hydrated.Sha }}{{ end }}{{ end }}/check-runs?filter=latest
+  httpRequest:
+    methodTemplate: GET
+    timeout: 30s
+    headerTemplates:
+      Accept: application/vnd.github+json
+      X-GitHub-Api-Version: "2022-11-28"
+    authentication:
+      scm: {}
+  success:
+    when:
+      variables:
+        expression: |
+          let selfKey = "github-unconfigured-required-checks";
+          let envSpec = find(PromotionStrategy.Spec.Environments ?? [], { #.Branch == Branch });
+          let configuredKeys = uniq(map(
+            (PromotionStrategy.Spec.ProposedCommitStatuses ?? []) +
+            (PromotionStrategy.Spec.ActiveCommitStatuses ?? []) +
+            (envSpec?.ProposedCommitStatuses ?? []) +
+            (envSpec?.ActiveCommitStatuses ?? []),
+            { #.Key }
+          ));
+          {
+            selfKey: selfKey,
+            configuredKeys: configuredKeys
+          }
+      expression: |
+        Response != nil
+          ? (
+              Response.StatusCode == 200 &&
+              all(
+                filter(Response.Body.check_runs ?? [], {
+                  !(#.name in Variables.configuredKeys) && #.name != Variables.selfKey
+                }),
+                {
+                  #.status == "completed" &&
+                  (#.conclusion == "success" || #.conclusion == "skipped" || #.conclusion == "neutral")
+                }
+              )
+            )
+          : (
+              Phase == "success" &&
+              (let wrcsEnv = find(WebRequestCommitStatus.Status.Environments ?? [], { #.Branch == Branch });
+               wrcsEnv != nil &&
+               find(PromotionStrategy.Status.Environments ?? [], { #.Branch == Branch })?.Proposed?.Hydrated?.Sha == wrcsEnv.LastSuccessfulSha)
+            )
+  mode:
+    trigger:
+      requeueDuration: 1m
+      when:
+        expression: |
+          find(PromotionStrategy.Status.Environments ?? [], { #.Branch == Branch })?.Proposed?.Hydrated?.Sha
+            != (TriggerOutput["lastCheckedSha"] ?? "")
+          || Phase != "success"
+        output:
+          expression: |
+            {
+              lastCheckedSha: find(PromotionStrategy.Status.Environments ?? [], { #.Branch == Branch })?.Proposed?.Hydrated?.Sha ?? ""
+            }
+      response:
+        output:
+          expression: |
+            let envSpec = find(PromotionStrategy.Spec.Environments ?? [], { #.Branch == Branch });
+            let configuredKeys = uniq(map(
+              (PromotionStrategy.Spec.ProposedCommitStatuses ?? []) +
+              (PromotionStrategy.Spec.ActiveCommitStatuses ?? []) +
+              (envSpec?.ProposedCommitStatuses ?? []) +
+              (envSpec?.ActiveCommitStatuses ?? []),
+              { #.Key }
+            ));
+            let selfKey = "github-unconfigured-required-checks";
+            let unconfigured = filter(Response.Body.check_runs ?? [], {
+              !(#.name in configuredKeys) && #.name != selfKey
+            });
+            let failed = filter(unconfigured, {
+              #.status == "completed" &&
+              !(#.conclusion in ["success", "skipped", "neutral"])
+            });
+            let inProgress = filter(unconfigured, { #.status != "completed" });
+            let failedNames = map(failed, {
+              #.name + " (" + string(#.conclusion ?? "unknown") + ")"
+            });
+            let inProgressNames = map(inProgress, { #.name });
+            let failedMsg = len(failedNames) > 0 ? "failed: " + join(failedNames, ", ") : "";
+            let pendingMsg = len(inProgressNames) > 0 ? "pending: " + join(inProgressNames, ", ") : "";
+            let message = failedMsg != "" && pendingMsg != ""
+              ? failedMsg + "; " + pendingMsg
+              : (failedMsg != "" ? failedMsg : (pendingMsg != "" ? pendingMsg : "all unconfigured checks passed"));
+            {
+              message: message,
+              failedChecks: join(failedNames, ", "),
+              pendingChecks: join(inProgressNames, ", "),
+              unconfiguredCount: len(unconfigured)
+            }
