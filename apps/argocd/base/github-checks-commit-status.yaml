@@ -35,7 +35,7 @@ metadata:
   name: github-unconfigured-required-checks
 spec:
   promotionStrategyRef:
-    name: strategy
+    name: petclinic
   key: github-unconfigured-required-checks
   reportOn: proposed
   descriptionTemplate: >-
