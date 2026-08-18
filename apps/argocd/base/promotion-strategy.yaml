@@ -10,14 +10,14 @@ spec:
     - autoMerge: true
       branch: environment/dev
       proposedCommitStatuses:
-        - key: github-unconfigured-required-checks
+        - key: github-required-checks
     - autoMerge: true
       branch: environment/stage
       proposedCommitStatuses:
-        - key: github-unconfigured-required-checks
+        - key: github-required-checks
     - autoMerge: true
       branch: environment/prod
       proposedCommitStatuses:
-        - key: github-unconfigured-required-checks
+        - key: github-required-checks
   gitRepositoryRef:
     name: petclinic
