@@ -52,8 +52,6 @@ spec:
     {{- end -}}
     GitHub checks not configured in promotion strategy{{ if ne $sha "" }} ({{ $sha }}){{ end }}: {{ $phase -}}
     {{- if ne $message "" }} — {{ $message }}{{ end -}}
-  urlTemplate: >-
-    https://github.com/api/v3/repos/gnunn-gitops/petclinic/commits/{{ range .PromotionStrategy.Status.Environments }}{{ if eq .Branch $.Branch }}{{ .Proposed.Hydrated.Sha }}{{ end }}{{ end }}/check-runs?filter=latest
   httpRequest:
     methodTemplate: GET
     timeout: 30s
@@ -62,6 +60,8 @@ spec:
       X-GitHub-Api-Version: "2022-11-28"
     authentication:
       scm: {}
+    urlTemplate: >-
+      https://github.com/api/v3/repos/gnunn-gitops/petclinic/commits/{{ range .PromotionStrategy.Status.Environments }}{{ if eq .Branch $.Branch }}{{ .Proposed.Hydrated.Sha }}{{ end }}{{ end }}/check-runs?filter=latest
   success:
     when:
       variables:
