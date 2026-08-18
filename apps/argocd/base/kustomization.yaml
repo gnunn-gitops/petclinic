@@ -7,7 +7,7 @@ resources:
   - acs-token-secret.yaml
   - acs-commit-status.yaml
   - argocd-commit-status.yaml
-  # - github-checks-commit-status.yaml
+  - github-checks-commit-status.yaml
   - image-updater-role.yaml
   - github-external-secret.yaml
   - gitops-promoter-github-app-key.yaml
