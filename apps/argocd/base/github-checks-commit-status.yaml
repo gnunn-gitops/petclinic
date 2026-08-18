@@ -61,7 +61,7 @@ spec:
     authentication:
       scm: {}
     urlTemplate: >-
-      https://api.github.com/api/v3/repos/gnunn-gitops/petclinic/commits/{{ range .PromotionStrategy.Status.Environments }}{{ if eq .Branch $.Branch }}{{ .Proposed.Hydrated.Sha }}{{ end }}{{ end }}/check-runs?filter=latest
+      https://api.github.com/api/repos/gnunn-gitops/petclinic/commits/{{ range .PromotionStrategy.Status.Environments }}{{ if eq .Branch $.Branch }}{{ .Proposed.Hydrated.Sha }}{{ end }}{{ end }}/check-runs?filter=latest
   success:
     when:
       variables:
