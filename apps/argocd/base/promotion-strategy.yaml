@@ -6,14 +6,18 @@ spec:
   activeCommitStatuses:
     - key: argocd-health-petclinic
     - key: acs-policy-violation
-  proposedCommitStatuses:
-    - key: github-unconfigured-required-checks
   environments:
     - autoMerge: true
       branch: environment/dev
+      proposedCommitStatuses:
+        - key: github-unconfigured-required-checks
     - autoMerge: true
       branch: environment/stage
+      proposedCommitStatuses:
+        - key: github-unconfigured-required-checks
     - autoMerge: true
       branch: environment/prod
+      proposedCommitStatuses:
+        - key: github-unconfigured-required-checks
   gitRepositoryRef:
     name: petclinic
