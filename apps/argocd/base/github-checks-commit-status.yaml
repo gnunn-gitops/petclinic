@@ -1,149 +1,136 @@
 # Provided by Zach Aller on this Slack thread: https://cloud-native.slack.com/archives/C06NXPYQ06B/p1787067235240869
 #
-# Example WebRequestCommitStatus that gates promotion on GitHub check runs which are
-# not already modeled as CommitStatus keys on the PromotionStrategy.
+# Gate promotion on GitHub's *actually required* checks, and name the ones that
+# are not passing.
 #
-# Use this as a catch-all for CI / branch-protection checks (for example Jenkins,
-# CodeQL, or org-wide workflows) that you have not wired up as their own
-# ArgoCDCommitStatus, GitCommitStatus, or WebRequestCommitStatus gate.
+# Uses the GitHub GraphQL API rather than REST because only GraphQL exposes
+# `isRequired`, which resolves branch protection / rulesets for you. That removes
+# the hand-maintained allowlist that the REST version
+# (webrequest-github-required-checks.yaml) needs, while still giving you the
+# individual check names that the PR-level `mergeable_state` field cannot.
 #
-# Wire it into the PromotionStrategy (global or per-environment proposedCommitStatuses):
+# Both required check runs (GitHub Actions and friends) and required legacy
+# status contexts are covered. A required check that has not reported yet shows
+# up as an EXPECTED status context, so it is counted as still pending rather
+# than silently passing.
 #
-#   spec:
-#     proposedCommitStatuses:
-#       - key: github-unconfigured-required-checks
-#     environments:
-#       - branch: environments/prd
-#         proposedCommitStatuses:
-#           - key: github-unconfigured-required-checks
+# Before applying, replace promotionStrategyRef.name with your PromotionStrategy.
+# Owner and repo are derived from the pull request URL, so there is nothing else
+# to hardcode.
 #
-# Requires SCM auth via the PromotionStrategy GitRepository. Replace the hardcoded
-# org, repo, and GitHub API host in urlTemplate for your repository.
-#
-# Check names are matched against PromotionStrategy commit-status keys exactly.
-# If a GitHub check name differs from the promoter key (for example GitHub shows
-# "Argo CD / sync" but the key is "argocd-health"), it will still be validated here.
-# Align names where possible to avoid duplicate gating.
-#
-# response.output builds a human-readable message listing failed and in-progress
-# checks. Required checks that have not started yet do not appear in check-runs
-# and cannot be listed without a separate branch-protection API call.
-#
+# One caveat: if you mark this gate's own check run ("<key>/<branch>") as
+# required in branch protection, it becomes required-and-pending forever and the
+# promotion deadlocks. Don't do that.
 apiVersion: promoter.argoproj.io/v1alpha1
 kind: WebRequestCommitStatus
 metadata:
-  name: github-unconfigured-required-checks
+  name: github-required-checks
+  namespace: default
 spec:
   promotionStrategyRef:
-    name: petclinic
-  key: github-unconfigured-required-checks
+    name: my-app
+  key: github-required-checks
   reportOn: proposed
+
   descriptionTemplate: >-
-    {{- $phase := .Phase -}}
-    {{- $message := "" -}}
-    {{- if .ResponseOutput -}}
-      {{- $message = index .ResponseOutput "message" | default "" -}}
-    {{- end -}}
-    {{- $sha := "" -}}
-    {{- range .PromotionStrategy.Status.Environments -}}
-      {{- if eq .Branch $.Branch -}}
-        {{- $sha = .Proposed.Hydrated.Sha | trunc 7 -}}
-      {{- end -}}
-    {{- end -}}
-    GitHub checks not configured in promotion strategy{{ if ne $sha "" }} ({{ $sha }}){{ end }}: {{ $phase -}}
-    {{- if ne $message "" }} — {{ $message }}{{ end -}}
+    {{ if .SuccessOutput }}{{ index .SuccessOutput "summary" }}{{ else }}Waiting for GitHub required checks{{ end }}
+
+  urlTemplate: >-
+    {{- range .PromotionStrategy.Status.Environments }}{{- if eq .Branch $.Branch }}{{ if .PullRequest }}{{ .PullRequest.Url }}{{ end }}{{- end }}{{- end }}
+
   httpRequest:
-    methodTemplate: GET
-    timeout: 30s
+    urlTemplate: "https://api.github.com/graphql"
+    methodTemplate: POST
     headerTemplates:
-      Accept: application/vnd.github+json
+      Accept: "application/vnd.github+json"
       X-GitHub-Api-Version: "2022-11-28"
     authentication:
       scm: {}
-    urlTemplate: >-
-      https://api.github.com/api/repos/gnunn-gitops/petclinic/commits/{{ range .PromotionStrategy.Status.Environments }}{{ if eq .Branch $.Branch }}{{ .Proposed.Hydrated.Sha }}{{ end }}{{ end }}/check-runs?filter=latest
+    timeout: 30s
+    # Queried by commit oid (not "the PR's head commit") so the gate always
+    # reports on exactly the hydrated SHA promoter is promoting. The PR number is
+    # only used to resolve isRequired.
+    bodyTemplate: >-
+      {{- range .PromotionStrategy.Status.Environments }}{{- if eq .Branch $.Branch }}
+      {"query":"query($owner:String!,$repo:String!,$oid:GitObjectID!,$pr:Int!){repository(owner:$owner,name:$repo){object(oid:$oid){... on Commit{statusCheckRollup{contexts(first:100){nodes{__typename ... on CheckRun{name status conclusion isRequired(pullRequestNumber:$pr)} ... on StatusContext{context state isRequired(pullRequestNumber:$pr)}}}}}}}}",
+      "variables":{"owner":"{{ index (splitList "/" (trimPrefix "https://github.com/" .PullRequest.Url)) 0 }}","repo":"{{ index (splitList "/" (trimPrefix "https://github.com/" .PullRequest.Url)) 1 }}","oid":"{{ .Proposed.Hydrated.Sha }}","pr":{{ .PullRequest.ID }}}}
+      {{- end }}{{- end }}
+
   success:
     when:
+      # requiredContexts below is computed, not configured: GitHub's isRequired
+      # field resolves branch protection and rulesets, so there is no list of
+      # check names to maintain anywhere in this file.
       variables:
         expression: |
-          let selfKey = "github-unconfigured-required-checks";
-          let envSpec = find(PromotionStrategy.Spec.Environments ?? [], { #.Branch == Branch });
-          let configuredKeys = uniq(map(
-            (PromotionStrategy.Spec.ProposedCommitStatuses ?? []) +
-            (PromotionStrategy.Spec.ActiveCommitStatuses ?? []) +
-            (envSpec?.ProposedCommitStatuses ?? []) +
-            (envSpec?.ActiveCommitStatuses ?? []),
-            { #.Key }
-          ));
+          let envStatus = find(PromotionStrategy.Status.Environments, {.Branch == Branch});
+          let wrcsEnv = find(WebRequestCommitStatus.Status.Environments ?? [], {.Branch == Branch});
+          let nodes = Response == nil ? [] : (Response.Body?.data?.repository?.object?.statusCheckRollup?.contexts?.nodes ?? []);
+          let requiredContexts = filter(nodes, (#.isRequired ?? false) == true);
+          let passed = ["SUCCESS", "SKIPPED", "NEUTRAL"];
+          let waiting = ["EXPECTED", "PENDING", "QUEUED", "IN_PROGRESS", "WAITING", "REQUESTED"];
+          let normalized = map(requiredContexts, #.__typename == "CheckRun"
+            ? {name: #.name, state: #.status != "COMPLETED" ? (#.status ?? "PENDING") : (#.conclusion ?? "UNKNOWN")}
+            : {name: #.context, state: #.state ?? "UNKNOWN"});
           {
-            selfKey: selfKey,
-            configuredKeys: configuredKeys
+            reportedSha: envStatus != nil ? envStatus.Proposed.Hydrated.Sha : "",
+            lastSuccessfulSha: wrcsEnv != nil ? (wrcsEnv.LastSuccessfulSha ?? "") : "",
+            graphqlErrors: Response == nil ? [] : map(Response.Body?.errors ?? [], #.message ?? "unknown error"),
+            total: len(normalized),
+            failing: map(filter(normalized, !(#.state in passed) && !(#.state in waiting)), #.name + " (" + lower(#.state) + ")"),
+            running: map(filter(normalized, #.state in waiting), #.name)
           }
+
+      # GraphQL answers 200 even for query errors, so errors are checked explicitly.
+      # Zero required checks counts as success — branch protection is not asking for
+      # anything. Add `&& Variables.total > 0` if you would rather fail closed.
       expression: |
-        Response != nil
-          ? (
-              Response.StatusCode == 200 &&
-              all(
-                filter(Response.Body.check_runs ?? [], {
-                  !(#.name in Variables.configuredKeys) && #.name != Variables.selfKey
-                }),
-                {
-                  #.status == "completed" &&
-                  (#.conclusion == "success" || #.conclusion == "skipped" || #.conclusion == "neutral")
-                }
-              )
-            )
-          : (
-              Phase == "success" &&
-              (let wrcsEnv = find(WebRequestCommitStatus.Status.Environments ?? [], { #.Branch == Branch });
-               wrcsEnv != nil &&
-               find(PromotionStrategy.Status.Environments ?? [], { #.Branch == Branch })?.Proposed?.Hydrated?.Sha == wrcsEnv.LastSuccessfulSha)
-            )
+        Response == nil
+          ? (Phase == "success" && Variables.lastSuccessfulSha == Variables.reportedSha)
+          : Response.StatusCode == 200 &&
+            len(Variables.graphqlErrors) == 0 &&
+            len(Variables.failing) == 0 &&
+            len(Variables.running) == 0
+
+      output:
+        expression: |
+          let fresh = {sha: Variables.reportedSha, summary: "Waiting for GitHub required checks", failing: [], running: []};
+          Response == nil
+            ? ((SuccessOutput != nil && (SuccessOutput.sha ?? "") == Variables.reportedSha) ? SuccessOutput : fresh)
+            : {
+                sha: Variables.reportedSha,
+                failing: Variables.failing,
+                running: Variables.running,
+                summary: len(Variables.graphqlErrors) > 0
+                  ? "GitHub API error: " + join(Variables.graphqlErrors, "; ")
+                  : (len(Variables.failing) + len(Variables.running) == 0
+                      ? (Variables.total == 0
+                          ? "No required checks configured"
+                          : "All " + string(Variables.total) + (Variables.total == 1 ? " required check passed" : " required checks passed"))
+                      : trim(
+                          (len(Variables.failing) > 0 ? "Failing: " + join(Variables.failing, ", ") + "; " : "") +
+                          (len(Variables.running) > 0 ? "Waiting on: " + join(Variables.running, ", ") : ""),
+                          "; "
+                        ))
+              }
+
   mode:
+    context: environments
+    # Trigger rather than polling: only spend a GraphQL call when this environment
+    # has an open PR, is at the front of the promotion queue, and has not already
+    # been verified for the current hydrated SHA.
     trigger:
-      requeueDuration: 1m
+      requeueDuration: 2m
       when:
         expression: |
-          find(PromotionStrategy.Status.Environments ?? [], { #.Branch == Branch })?.Proposed?.Hydrated?.Sha
-            != (TriggerOutput["lastCheckedSha"] ?? "")
-          || Phase != "success"
-        output:
-          expression: |
-            {
-              lastCheckedSha: find(PromotionStrategy.Status.Environments ?? [], { #.Branch == Branch })?.Proposed?.Hydrated?.Sha ?? ""
-            }
-      response:
-        output:
-          expression: |
-            let envSpec = find(PromotionStrategy.Spec.Environments ?? [], { #.Branch == Branch });
-            let configuredKeys = uniq(map(
-              (PromotionStrategy.Spec.ProposedCommitStatuses ?? []) +
-              (PromotionStrategy.Spec.ActiveCommitStatuses ?? []) +
-              (envSpec?.ProposedCommitStatuses ?? []) +
-              (envSpec?.ActiveCommitStatuses ?? []),
-              { #.Key }
-            ));
-            let selfKey = "github-unconfigured-required-checks";
-            let unconfigured = filter(Response.Body.check_runs ?? [], {
-              !(#.name in configuredKeys) && #.name != selfKey
-            });
-            let failed = filter(unconfigured, {
-              #.status == "completed" &&
-              !(#.conclusion in ["success", "skipped", "neutral"])
-            });
-            let inProgress = filter(unconfigured, { #.status != "completed" });
-            let failedNames = map(failed, {
-              #.name + " (" + string(#.conclusion ?? "unknown") + ")"
-            });
-            let inProgressNames = map(inProgress, { #.name });
-            let failedMsg = len(failedNames) > 0 ? "failed: " + join(failedNames, ", ") : "";
-            let pendingMsg = len(inProgressNames) > 0 ? "pending: " + join(inProgressNames, ", ") : "";
-            let message = failedMsg != "" && pendingMsg != ""
-              ? failedMsg + "; " + pendingMsg
-              : (failedMsg != "" ? failedMsg : (pendingMsg != "" ? pendingMsg : "all unconfigured checks passed"));
-            {
-              message: message,
-              failedChecks: join(failedNames, ", "),
-              pendingChecks: join(inProgressNames, ", "),
-              unconfiguredCount: len(unconfigured)
-            }
+          let envStatus = find(PromotionStrategy.Status.Environments, {.Branch == Branch});
+          let wrcsEnv = find(WebRequestCommitStatus.Status.Environments ?? [], {.Branch == Branch});
+          let lastSuccessfulSha = wrcsEnv != nil ? (wrcsEnv.LastSuccessfulSha ?? "") : "";
+          let idx = findIndex(PromotionStrategy.Status.Environments, #.Branch == Branch);
+          let ahead = idx == nil || idx == 0 ? [] : PromotionStrategy.Status.Environments[:idx];
+          envStatus != nil &&
+          envStatus.PullRequest != nil &&
+          (envStatus.PullRequest.ID ?? "") != "" &&
+          string(envStatus.PullRequest.State) == "open" &&
+          all(ahead, #.PullRequest == nil || string(#.PullRequest.State) != "open") &&
+          lastSuccessfulSha != envStatus.Proposed.Hydrated.Sha
