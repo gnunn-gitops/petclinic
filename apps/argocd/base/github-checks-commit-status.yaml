@@ -26,7 +26,7 @@ metadata:
   namespace: default
 spec:
   promotionStrategyRef:
-    name: argocon-demo
+    name: petclinic
   key: github-required-checks
   reportOn: proposed
 
