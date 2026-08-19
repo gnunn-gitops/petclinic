@@ -7,7 +7,7 @@ spec:
     name: petclinic
   key: acs-policy-violation
   reportOn: active
-  descriptionTemplate: 'status: {{ index .SuccessVariables "status" }}, critical: {{ index .SuccessVariables "critical" }}, high: {{ index .SuccessVariables "high" }} '
+  descriptionTemplate: 'critical: {{ index .SuccessVariables "critical" }}, high: {{ index .SuccessVariables "high" }}, medium: {{ index .SuccessVariables "medium" }}, low: {{ index .SuccessVariables "low" }}'
   urlTemplate: https://central-rhacs-operator.apps.hub.ocplab.com/main/violations?filteredWorkflowView=Applications%20view&violationState=ACTIVE&s[Namespace][0]=%22petclinic-{{ .Branch | splitList "/" | last }}%22
   httpRequest:
     urlTemplate: https://central-rhacs-operator.apps.hub.ocplab.com/v1/alerts?query=Namespace:petclinic-{{ .Branch | splitList "/" | last }}
