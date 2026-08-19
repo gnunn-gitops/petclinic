@@ -53,4 +53,4 @@ spec:
   mode:
     context: environments
     polling:
-      interval: 5m
+      interval: 1m
