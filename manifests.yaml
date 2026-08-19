@@ -300,6 +300,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
+    signer: ocplab
   name: petclinic
   namespace: petclinic-stage
 spec:
@@ -340,6 +341,7 @@ spec:
         openshift.io/generated-by: OpenShiftWebConsole
       labels:
         app: petclinic
+        signer: ocplab
     spec:
       containers:
       - env:
