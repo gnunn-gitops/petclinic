@@ -10,7 +10,7 @@ spec:
   descriptionTemplate: 'critical: {{ index .SuccessVariables "critical" }}, high: {{ index .SuccessVariables "high" }}, medium: {{ index .SuccessVariables "medium" }}, low: {{ index .SuccessVariables "low" }}'
   urlTemplate: https://central-rhacs-operator.apps.hub.ocplab.com/main/violations?filteredWorkflowView=Applications%20view&violationState=ACTIVE&s[Namespace][0]=%22petclinic-{{ .Branch | splitList "/" | last }}%22
   httpRequest:
-    urlTemplate: https://central-rhacs-operator.apps.hub.ocplab.com/v1/alerts?query?Namespace%3Apetclinic-{{ .Branch | splitList "/" | last }}%2BPlatform%20Component%3Afalse%2BEntity%20Type%3ADEPLOYMENT%2BViolation%20State%3AACTIVE
+    urlTemplate: https://central-rhacs-operator.apps.hub.ocplab.com/v1/alerts?query=Namespace%3Apetclinic-{{ .Branch | splitList "/" | last }}%2BPlatform%20Component%3Afalse%2BEntity%20Type%3ADEPLOYMENT%2BViolation%20State%3AACTIVE
     methodTemplate: GET
     timeout: 30s
     authentication:
