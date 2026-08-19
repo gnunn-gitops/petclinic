@@ -1,3 +1,5 @@
+# Taken from Zach Aller's repo here: https://github.com/zachaller/argocon-gitops-promoter-hydrate-demo/blob/main/user-configuration/promotion-app/gh-web.yaml
+#
 # Gate promotion on GitHub's *actually required* checks, and name the ones that
 # are not passing.
 #
