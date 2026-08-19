@@ -51,6 +51,6 @@ spec:
       output:
         expression: "Variables"
   mode:
-    context: promotionstrategy
+    context: environments
     polling:
       interval: 5m
