@@ -1,6 +1,8 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
+  labels:
+    signer: ocplab
   name: petclinic
 spec:
   progressDeadlineSeconds: 600
@@ -40,6 +42,7 @@ spec:
         openshift.io/generated-by: OpenShiftWebConsole
       labels:
         app: petclinic
+        signer: ocplab
     spec:
       containers:
         - image: quay.io/gnunn/quarkus-petclinic:latest
