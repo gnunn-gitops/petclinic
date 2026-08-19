@@ -1,8 +1,8 @@
 {
-  "drySha": "5d80f0da0f0e74c13798a53f13dae60d8b249f12",
+  "drySha": "6d98fbec1ac16a146f8e3a234a8b4813990a5e6b",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-08-19T09:39:12-07:00",
-  "subject": "Add label indicating signer\n",
+  "date": "2026-08-19T11:39:37-07:00",
+  "subject": "Trigger promotion\n",
   "body": "\n"
 }
