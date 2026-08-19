@@ -1,8 +1,8 @@
 {
-  "drySha": "4e5a9bfa9cf9f2e921a6a51b7d136ade6691079d",
+  "drySha": "5d80f0da0f0e74c13798a53f13dae60d8b249f12",
   "repoURL": "https://github.com/org/repo",
-  "author": "argocd-image-updater <noreply@argoproj.io>",
-  "date": "2026-08-18T22:21:57Z",
-  "subject": "build: automatic update of petclinic-prod\n",
-  "body": "updates image gnunn/quarkus-petclinic tag '3dacfc6-3I6TKZwZ3lhfs7mOe0q6I0t3koN' to '3dacfc6-3I6idtpfcE7AB3fSialj6NWuvJP'\n\n"
+  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
+  "date": "2026-08-19T09:39:12-07:00",
+  "subject": "Add label indicating signer\n",
+  "body": "\n"
 }
