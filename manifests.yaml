@@ -364,7 +364,7 @@ spec:
             secretKeyRef:
               key: database-password
               name: petclinic-db
-        image: quay.io/gnunn/quarkus-petclinic:3dacfc6-3IC8fafehan1g7EIb6kL2u3n0O5
+        image: quay.io/gnunn/quarkus-petclinic:3dacfc6-3ICAKln1vjJfyNZP0foMz0kaR8b
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
