@@ -25,7 +25,6 @@ apiVersion: promoter.argoproj.io/v1alpha1
 kind: WebRequestCommitStatus
 metadata:
   name: github-required-checks
-  namespace: default
 spec:
   promotionStrategyRef:
     name: petclinic
@@ -125,16 +124,31 @@ spec:
       # UNSTABLE must be accepted: it means "mergeable, some non-required check is
       # not passing", which is the state this gate's own pending check run creates.
       expression: |
-        Response == nil
-          ? (Phase == "success" && Variables.lastSuccessfulSha == Variables.reportedSha)
-          : Response.StatusCode == 200 &&
+        if Response == nil {
+          (Phase == "success" && Variables.lastSuccessfulSha == Variables.reportedSha)
+        } else {
+          if (Response.StatusCode == 200 &&
             len(Variables.graphqlErrors) == 0 &&
             Variables.commitFound &&
             len(Variables.failing) == 0 &&
             len(Variables.running) == 0 &&
             len(Variables.missing) == 0 &&
-            Variables.mergeState in ["CLEAN", "UNSTABLE", "HAS_HOOKS"]
-
+            Variables.mergeState in ["CLEAN", "UNSTABLE", "HAS_HOOKS"]) {
+              { "phase": "success" }
+          } else {
+            if (Response.StatusCode == 200 &&
+              len(Variables.graphqlErrors) == 0 &&
+              Variables.commitFound &&
+              (len(Variables.failing) > 0 ||
+              len(Variables.missing) > 0) &&
+              len(Variables.running) == 0 &&
+              Variables.mergeState in ["BLOCKED"]) {
+                { "phase": "failure" }
+            } else {
+                { "phase": "pending" }
+            }
+          }
+        }
       output:
         expression: |
           let fresh = {sha: Variables.reportedSha, summary: "Waiting for GitHub required checks", required: [], missing: [], failing: [], running: []};
