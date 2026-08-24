@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.5.0 # Use the latest stable version
+        uses: sigstore/cosign-installer@v3.5.0
       - name: Code Checkout
         uses: actions/checkout@v7
       - name: Get Image
