@@ -1,8 +1,8 @@
 {
-  "drySha": "2fcc904b507e93f9356375b848233117db64361d",
+  "drySha": "bd841d99988a417b425bc8b865f310fe962401f1",
   "repoURL": "https://github.com/org/repo",
   "author": "argocd-image-updater <noreply@argoproj.io>",
-  "date": "2026-08-20T20:38:00Z",
-  "subject": "build: automatic update of petclinic-dev\n",
-  "body": "updates image gnunn/quarkus-petclinic tag '3dacfc6-3IC8fafehan1g7EIb6kL2u3n0O5' to '3dacfc6-3ICAKln1vjJfyNZP0foMz0kaR8b'\n\n"
+  "date": "2026-08-24T16:39:30Z",
+  "subject": "build: automatic update of petclinic-prod\n",
+  "body": "updates image gnunn/quarkus-petclinic tag '3dacfc6-3ICAKln1vjJfyNZP0foMz0kaR8b' to '3dacfc6-3IMzcA4LF4oQZGVegbxcyI20H1N'\n\n"
 }
