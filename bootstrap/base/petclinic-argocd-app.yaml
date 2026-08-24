@@ -11,7 +11,7 @@ spec:
     namespace: petclinic-argocd
   project: petclinic
   source:
-    path: apps/argocd/base
+    path: apps/argocd/overlays/single-ps
     repoURL: https://github.com/gnunn-gitops/petclinic.git
     targetRevision: HEAD
   syncPolicy:

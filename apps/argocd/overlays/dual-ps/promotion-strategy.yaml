@@ -1,0 +1,23 @@
+apiVersion: promoter.argoproj.io/v1alpha1
+kind: PromotionStrategy
+metadata:
+  name: petclinic-dev
+spec:
+  environments:
+    - autoMerge: true
+      branch: environment/dev
+  gitRepositoryRef:
+    name: petclinic
+---
+apiVersion: promoter.argoproj.io/v1alpha1
+kind: PromotionStrategy
+metadata:
+  name: petclinic-stage-prod
+spec:
+  environments:
+    - autoMerge: true
+      branch: environment/stage
+    - autoMerge: true
+      branch: environment/prod
+  gitRepositoryRef:
+    name: petclinic
