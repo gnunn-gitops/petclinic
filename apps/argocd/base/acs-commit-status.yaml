@@ -47,7 +47,15 @@ spec:
               }
            : prev
       expression: |
-        Variables.status == "Success" && Variables.critical == 0
+        if Variables.status == "Success" {
+          if (Variables.critical == 0) {
+            { phase: "success" }
+          } else {
+            { phase: "failure" }
+          }
+        } else {
+          { phase: "pending" }
+        }
       output:
         expression: "Variables"
   mode:
