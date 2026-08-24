@@ -12,7 +12,7 @@ on:
       - "main"
 
 jobs:
-  validate-image:
+  verify-image:
     runs-on: ubuntu-latest
     steps:
       - name: Install Cosign
