@@ -1,0 +1,40 @@
+name: Verify Image
+on:
+  pull_request:
+    branches:
+      - "environment/prod"
+      - "environment/stage"
+      - "environment/dev"
+      - "main"
+
+  push:
+    branches:
+      - "main"
+
+jobs:
+  validate-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.5.0
+      - name: Code Checkout
+        uses: actions/checkout@v7
+      - name: Get Image
+        id: get-image
+        run: |
+          export PETCLINIC_IMAGE_URL=$(kustomize build apps/petclinic/base | yq '. | select(.kind == "Rollout" and .metadata.name == "petclinic") | .spec.template.spec.containers[].image' | tr -d '"')
+          PETCLINIC_TAG=$(echo -n "${PETCLINIC_IMAGE_URL##*:}")
+          echo "Testing image: $PETCLINIC_IMAGE_URL"
+          echo "Testing tag: $PETCLINIC_TAG"
+          echo -n "petclinic_tag=$PETCLINIC_TAG" >> $GITHUB_OUTPUT
+      - name: Verify Image Identity
+        run: |
+          cosign verify \
+            --certificate-identity "tekton-builder@rhdp.com" \
+            --certificate-oidc-issuer "https://sso.ocplab.com/realms/ocplab" \
+            --insecure-ignore-tlog=true \
+            quay.io/gnunn/quarkus-petclinic:${{ steps.get-image.outputs.petclinic_tag }}
+        env:
+          # Disable Rekor and TUF network calls globally for this step
+          COSIGN_REKOR_DISABLED: "1"
+          COSIGN_TUF_DISABLED: "1"
