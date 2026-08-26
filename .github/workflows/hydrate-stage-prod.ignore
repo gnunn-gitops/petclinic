@@ -1,3 +1,4 @@
+# Only used when testing dual PromotionStrategy
 name: Hydrate Stage Prod Manifests
 on:
   push:
