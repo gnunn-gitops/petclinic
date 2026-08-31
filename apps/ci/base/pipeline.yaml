@@ -217,7 +217,7 @@ spec:
         - name: message
           value: |-
             *$(params.APP_NAME) Image Scan Failed*
-            The image scan for $(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id) failed, please view test results here: https://$(params.ACS_ENDPOINT)/main/vulnerability-management/images/$(tasks.build.results.IMAGE_DIGEST)
+            The image scan for $(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id) failed, please view test results here: https://$(params.ACS_ENDPOINT)/main/vulnerabilities/user-workloads?vulnerabilityState=OBSERVED&entityTab=CVE&sortOption[0][field]=Critical%20Severity%20Count&sortOption[0][direction]=desc&sortOption[1][field]=Important%20Severity%20Count&sortOption[1][direction]=desc&sortOption[2][field]=Moderate%20Severity%20Count&sortOption[2][direction]=desc&sortOption[3][field]=Low%20Severity%20Count&sortOption[3][direction]=desc&sortOption[4][field]=Unknown%20Severity%20Count&sortOption[4][direction]=desc&s[Image%20Tag][0]=$(tasks.generate-id.results.tag_id)
       workspaces:
         - name: slack-secret
           workspace: slack-deployments-webhook
@@ -253,7 +253,7 @@ spec:
             The build of image $(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id) has been completed
 
             * Quay Image: https://$(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id)
-            * ACS Scan: https://$(params.ACS_ENDPOINT)/main/vulnerability-management/images/$(tasks.build.results.IMAGE_DIGEST)
+            * ACS Scan: https://$(params.ACS_ENDPOINT)/main/vulnerabilities/user-workloads?vulnerabilityState=OBSERVED&entityTab=CVE&sortOption[0][field]=Critical%20Severity%20Count&sortOption[0][direction]=desc&sortOption[1][field]=Important%20Severity%20Count&sortOption[1][direction]=desc&sortOption[2][field]=Moderate%20Severity%20Count&sortOption[2][direction]=desc&sortOption[3][field]=Low%20Severity%20Count&sortOption[3][direction]=desc&sortOption[4][field]=Unknown%20Severity%20Count&sortOption[4][direction]=desc&s[Image%20Tag][0]=$(tasks.generate-id.results.tag_id)
         - name: message_type
           value: raw
         - name: message
@@ -289,7 +289,7 @@ spec:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "* <https://$(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id)|Quay Image>\n* <https://$(params.ACS_ENDPOINT)/main/vulnerability-management/images/$(tasks.build.results.IMAGE_DIGEST)|ACS Scan>"
+                    "text": "* <https://$(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id)|Quay Image>\n* <https://$(params.ACS_ENDPOINT)/main/vulnerabilities/user-workloads?vulnerabilityState=OBSERVED&entityTab=CVE&sortOption[0][field]=Critical%20Severity%20Count&sortOption[0][direction]=desc&sortOption[1][field]=Important%20Severity%20Count&sortOption[1][direction]=desc&sortOption[2][field]=Moderate%20Severity%20Count&sortOption[2][direction]=desc&sortOption[3][field]=Low%20Severity%20Count&sortOption[3][direction]=desc&sortOption[4][field]=Unknown%20Severity%20Count&sortOption[4][direction]=desc&s[Image%20Tag][0]=$(tasks.generate-id.results.tag_id)|ACS Scan>"
                   }
                 }
               ]
