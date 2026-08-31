@@ -14,6 +14,12 @@ spec:
       type: string
       description: External registry location to copy image to
       default: quay.io/gnunn/quarkus-petclinic
+    - name: APP_NAME
+      type: string
+      default: Petclinic
+    - name: ACS_ENDPOINT
+      type: string
+      default: central-rhacs-operator.apps.hub.ocplab.com:443
   tasks:
     - name: acquire-lease
       taskRef:
@@ -194,12 +200,30 @@ spec:
           workspace: acs-central
         - name: upload-sbom
           workspace: upload-sbom
+    - name: notify-on-scan-fail
+      taskRef:
+        name: send-to-webhook-slack
+        kind: Task
+      runAfter:
+        - generate-sbom
+      when:
+        - input: "$(tasks.acs-check-image.results.check_passed)"
+          operator: in
+          values: ["false"]
+      params:
+        - name: message
+          value: |-
+            *$(params.APP_NAME) Image Scan Failed*
+            The image scan for $(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id) failed, please view test results here: https://$(params.ACS_ENDPOINT)/main/vulnerability-management/images/$(tasks.build.results.IMAGE_DIGEST)
+      workspaces:
+        - name: slack-secret
+          workspace: slack-deployments-webhook
     - name: tag-image
       taskRef:
         name: push-image
         kind: Task
       runAfter:
-        - generate-sbom
+        - notify-on-scan-fail
         - verify-signature
       params:
         - name: SRC_IMAGE
@@ -208,6 +232,64 @@ spec:
           value: $(params.IMAGE_DEST_URL)
         - name: DEST_TAGS
           value: "$(tasks.generate-id.results.tag_id)"
+    - name: notify-build-complete
+      taskRef:
+        name: send-to-webhook-slack
+        kind: Task
+      runAfter:
+        - tag-image
+      params:
+        - name: console_message
+          value: |-
+            $(params.APP_NAME) Build $(tasks.generate-id.results.tag_id) Completed
+
+            The build of image $(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id) has been completed
+
+            * Quay Image: https://$(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id)
+            * ACS Scan: https://$(params.ACS_ENDPOINT)/main/vulnerability-management/images/$(tasks.build.results.IMAGE_DIGEST)
+        - name: message_type
+          value: raw
+        - name: message
+          value: |-
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Petclinic Pipeline Complete",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Petclinic pipeline for image $(tasks.generate-id.results.tag_id) has completed"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Pipeline Results*"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "* <https://$(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id)|Quay Image>\n* <https://$(params.ACS_ENDPOINT)/main/vulnerability-management/images/$(tasks.build.results.IMAGE_DIGEST)|ACS Scan>"
+                  }
+                }
+              ]
+            }
+      workspaces:
+        - name: slack-secret
+          workspace: slack-deployments-webhook
   finally:
     - name: release-lease
       taskRef:
@@ -219,9 +301,28 @@ spec:
       params:
         - name: lease-name
           value: "$(context.pipeline.name)"
+    - name: notify-on-fail
+      taskRef:
+        name: send-to-webhook-slack
+        kind: Task
+      when:
+        - input: $(tasks.status)
+          operator: in
+          values: ["Failed"]
+        - input: "$(workspaces.slack-secret.bound)"
+          operator: in
+          values: ["true"]
+      params:
+        - name: message
+          value: "Some tasks in the $(context.pipeline.name) have failed in pipelinerun $(context.pipelinerun.name) failed, please investigate"
+      workspaces:
+        - name: slack-secret
+          workspace: slack-deployments-webhook
   workspaces:
     - name: git-source
     - name: acs-central
       optional: true
     - name: upload-sbom
+      optional: true
+    - name: slack-deployments-webhook
       optional: true

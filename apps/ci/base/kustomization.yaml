@@ -8,6 +8,7 @@ resources:
   - acs-token-secret.yaml
   - upload-sbom-secret.yaml
   - docker-external-secret.yaml
+  - slack-deployments-secret.yaml
   - m2-cache-pvc.yaml
   - source-pvc.yaml
   - export-sbom-task.yaml

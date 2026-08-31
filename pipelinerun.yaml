@@ -32,3 +32,6 @@ spec:
     - name: upload-sbom
       secret:
         secretName: upload-sbom
+    - name: slack-deployments-webhook
+      secret:
+        secretName: slack-deployments-webhook
