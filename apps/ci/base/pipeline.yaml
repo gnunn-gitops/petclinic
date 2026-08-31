@@ -210,7 +210,7 @@ spec:
         - input: "$(tasks.acs-check-image.results.check_passed)"
           operator: in
           values: ["false"]
-        - input: "$(workspaces.slack-secret.bound)"
+        - input: "$(workspaces.slack-deployments-webhook.bound)"
           operator: in
           values: ["true"]
       params:
@@ -242,7 +242,7 @@ spec:
       runAfter:
         - tag-image
       when:
-        - input: "$(workspaces.slack-secret.bound)"
+        - input: "$(workspaces.slack-deployments-webhook.bound)"
           operator: in
           values: ["true"]
       params:
@@ -316,7 +316,7 @@ spec:
         - input: $(tasks.status)
           operator: in
           values: ["Failed"]
-        - input: "$(workspaces.slack-secret.bound)"
+        - input: "$(workspaces.slack-deployments-webhook.bound)"
           operator: in
           values: ["true"]
       params:
