@@ -210,6 +210,9 @@ spec:
         - input: "$(tasks.acs-check-image.results.check_passed)"
           operator: in
           values: ["false"]
+        - input: "$(workspaces.slack-secret.bound)"
+          operator: in
+          values: ["true"]
       params:
         - name: message
           value: |-
@@ -238,6 +241,10 @@ spec:
         kind: Task
       runAfter:
         - tag-image
+      when:
+        - input: "$(workspaces.slack-secret.bound)"
+          operator: in
+          values: ["true"]
       params:
         - name: console_message
           value: |-
