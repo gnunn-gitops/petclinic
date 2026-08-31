@@ -10,7 +10,7 @@ spec:
     - name: SOURCE_GIT_REVISION
       value: master
     - name: SOURCE_GIT_URL
-      value: https://github.com/redhat-developer-demos/quarkus-petclinic
+      value: https://github.com/gnunn-gitops/quarkus-petclinic
     - name: IMAGE_DEST_URL
       value: quay.io/gnunn/quarkus-petclinic
   pipelineRef:
@@ -23,9 +23,6 @@ spec:
     - name: git-source
       persistentVolumeClaim:
         claimName: source
-    - name: m2-cache
-      persistentVolumeClaim:
-        claimName: m2-cache
     - name: acs-central
       secret:
         secretName: acs-central
