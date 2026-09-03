@@ -37,7 +37,7 @@ jobs:
           export IMAGE="quay.io/gnunn/quarkus-petclinic:${{ steps.get-image.outputs.petclinic_tag }}"
           export SIGNING_EMAIL_ADDR="tekton-builder@rhdp.com"
           export SIGNING_OIDC_ISSUER="https://sso.ocplab.com/realms/ocplab"
-          export TRUSTED_ROOT=$(pwd)/targets/*.trusted_root.json
+          export TRUSTED_ROOT=/home/gnunn/.repository/targets/*.trusted_root.json
 
           cosign version
 
