@@ -41,7 +41,8 @@ jobs:
 
           cosign version
 
-          ls .github/repository/targets/
+          ls .
+
           ls ${TRUSTED_ROOT}
 
           cosign verify --certificate-identity="${SIGNING_EMAIL_ADDR}" --certificate-oidc-issuer="${SIGNING_OIDC_ISSUER}" --trusted-root ${TRUSTED_ROOT} "${IMAGE}"
