@@ -29,12 +29,16 @@ jobs:
           echo -n "petclinic_tag=$PETCLINIC_TAG" >> $GITHUB_OUTPUT
       - name: Verify Image Identity
         run: |
-          cosign verify \
-            --certificate-identity "tekton-builder@rhdp.com" \
-            --certificate-oidc-issuer "https://sso.ocplab.com/realms/ocplab" \
-            --insecure-ignore-tlog=true \
-            quay.io/gnunn/quarkus-petclinic:${{ steps.get-image.outputs.petclinic_tag }}
-        env:
-          # Disable Rekor and TUF network calls globally for this step
-          COSIGN_REKOR_DISABLED: "1"
-          COSIGN_TUF_DISABLED: "1"
+          cd .github/repository
+          echo "$REPOSITORY_CHECKSUM repository.tar.gz" | sha256sum --check - || echo "Archive integrity compromised, don't continue with the procedure\!"
+
+          tar -xzvf repository.tar.gz
+
+          export IMAGE="quay.io/gnunn/quarkus-petclinic:${{ steps.get-image.outputs.petclinic_tag }}"
+          export SIGNING_EMAIL_ADDR="tekton-builder@rhdp.com"
+          export SIGNING_OIDC_ISSUER="https://sso.ocplab.com/realms/ocplab"
+          export TRUSTED_ROOT=$(pwd)/targets/*.trusted_root.json
+
+          cosign verify --certificate-identity="${SIGNING_EMAIL_ADDR}" --certificate-oidc-issuer="${SIGNING_OIDC_ISSUER}" --trusted-root ${TRUSTED_ROOT} "${IMAGE}"
+
+        env: REPOSITORY_CHECKSUM=${{ secrets.REPOSITORY_CHECKSUM }}
