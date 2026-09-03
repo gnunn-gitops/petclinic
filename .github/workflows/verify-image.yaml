@@ -41,4 +41,5 @@ jobs:
 
           cosign verify --certificate-identity="${SIGNING_EMAIL_ADDR}" --certificate-oidc-issuer="${SIGNING_OIDC_ISSUER}" --trusted-root ${TRUSTED_ROOT} "${IMAGE}"
 
-        env: REPOSITORY_CHECKSUM=${{ secrets.REPOSITORY_CHECKSUM }}
+        env:
+          REPOSITORY_CHECKSUM: ${{ secrets.REPOSITORY_CHECKSUM }}
