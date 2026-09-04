@@ -1,3 +1,4 @@
+# Enable when Pipelines 1.24 is out where Chains supports OCI 1.1 Referrer/Bundle support
 name: Verify Image
 on:
   pull_request:
