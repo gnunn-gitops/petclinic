@@ -8,4 +8,5 @@ resources:
   - acs-commit-status.yaml
   - argocd-commit-status.yaml
   - github-checks-commit-status.yaml
+  - dependency-commit-status.yaml
   - promotion-strategy.yaml
