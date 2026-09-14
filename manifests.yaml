@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test-trigger: "20260914122919"
+    test-trigger: "20260914123830"
   name: monitor-auth-secret
   namespace: petclinic-dev
 rules:
@@ -33,7 +33,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test-trigger: "20260914122919"
+    test-trigger: "20260914123830"
   name: monitor-auth-secret
   namespace: petclinic-dev
 roleRef:
@@ -57,7 +57,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test-trigger: "20260914122919"
+    test-trigger: "20260914123830"
   name: monitor-auth-secret
   namespace: petclinic-dev
 type: kubernetes.io/service-account-token
@@ -72,7 +72,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test-trigger: "20260914122919"
+    test-trigger: "20260914123830"
   name: petclinic-canary
   namespace: petclinic-dev
 spec:
@@ -113,7 +113,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test-trigger: "20260914122919"
+    test-trigger: "20260914123830"
   name: petclinic-stable
   namespace: petclinic-dev
 spec:
@@ -250,7 +250,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test-trigger: "20260914122919"
+    test-trigger: "20260914123830"
   name: smoke-test
   namespace: petclinic-dev
 spec:
@@ -307,7 +307,7 @@ metadata:
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
     signer: ocplab
-    test-trigger: "20260914122919"
+    test-trigger: "20260914123830"
   name: petclinic
   namespace: petclinic-dev
 spec:
@@ -435,7 +435,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test-trigger: "20260914122919"
+    test-trigger: "20260914123830"
   name: petclinic
   namespace: petclinic-dev
 spec:
@@ -463,7 +463,7 @@ metadata:
     app.kubernetes.io/name: petclinic
     app.kubernetes.io/part-of: petclinic
     app.openshift.io/runtime-icon: quarkus
-    test-trigger: "20260914122919"
+    test-trigger: "20260914123830"
   name: petclinic-canary
   namespace: petclinic-dev
 spec:
