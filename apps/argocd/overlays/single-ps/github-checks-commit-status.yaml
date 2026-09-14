@@ -237,6 +237,8 @@ spec:
               staleResult
               );
             {
+              commitFound: commitFound,
+              staleResult: staleResult,
               doTrigger: doTrigger
             }
         expression: |
