@@ -241,15 +241,15 @@ spec:
             let evaluatedGeneration = SuccessOutput != nil ? int(SuccessOutput.specGeneration ?? 0) : 0;
             let staleResult = lastSuccessfulSha != envStatus?.Proposed.Hydrated.Sha ||
                               evaluatedGeneration != int(WebRequestCommitStatus.Generation);
-            let doTrigger = phase == "pending" ? true :
-              envStatus != nil &&
+            let doTrigger = (phase == "pending") ? true :
+              (envStatus != nil &&
               envStatus.PullRequest != nil &&
               (envStatus.PullRequest.ID ?? "") != "" &&
               string(envStatus.PullRequest.State) == "open" &&
               all(ahead, #.PullRequest == nil || string(#.PullRequest.State) != "open") &&
-              staleResult;
+              staleResult);
             {
               doTrigger: doTrigger
             }
         expression: |
-          true
+          doTrigger
