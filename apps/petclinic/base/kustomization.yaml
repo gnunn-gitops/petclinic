@@ -10,7 +10,7 @@ labels:
       app.kubernetes.io/name: petclinic
       app.kubernetes.io/part-of: petclinic
       app.openshift.io/runtime-icon: quarkus
-      test-trigger: "20260914122919"
+      test-trigger: "20260914123830"
 
 resources:
   - monitor-auth-secret.yaml
