@@ -97,20 +97,6 @@ spec:
             ? {name: #.name, state: #.status != "COMPLETED" ? (#.status ?? "PENDING") : (#.conclusion ?? "UNKNOWN")}
             : {name: #.context, state: #.state ?? "UNKNOWN"});
 
-          // Add trigger variables to figure out what is happening
-          let phase = wrcsEnv != nil ? (wrcsEnv.Phase ?? "pending") : "pending";
-          let idx = findIndex(PromotionStrategy.Status.Environments, #.Branch == Branch);
-          let ahead = idx == nil || idx == 0 ? [] : PromotionStrategy.Status.Environments[:idx];
-          let evaluatedGeneration = SuccessOutput != nil ? int(SuccessOutput.specGeneration ?? 0) : 0;
-          let staleResult = lastSuccessfulSha != envStatus?.Proposed.Hydrated.Sha ||
-                            evaluatedGeneration != int(WebRequestCommitStatus.Generation);
-          let doTrigger = phase == "pending" ? true :
-            envStatus != nil &&
-            envStatus.PullRequest != nil &&
-            (envStatus.PullRequest.ID ?? "") != "" &&
-            string(envStatus.PullRequest.State) == "open" &&
-            all(ahead, #.PullRequest == nil || string(#.PullRequest.State) != "open") &&
-            staleResult;
           {
             reportedSha: envStatus != nil ? envStatus.Proposed.Hydrated.Sha : "",
             lastSuccessfulSha: wrcsEnv != nil ? (wrcsEnv.LastSuccessfulSha ?? "") : "",
@@ -125,13 +111,6 @@ spec:
             missing: missing ?? [],
             failing: map(filter(normalized, !(#.state in passed) && !(#.state in waiting)), #.name + " (" + lower(#.state) + ")"),
             running: map(filter(normalized, #.state in waiting), #.name),
-
-            phase: phase,
-            idx: idx,
-            ahead: ahead,
-            evaluatedGeneration: evaluatedGeneration,
-            staleResult: staleResult,
-            doTrigger: doTrigger
           }
 
       # GraphQL answers 200 even for query errors, so errors are checked explicitly.
@@ -173,7 +152,15 @@ spec:
         }
       output:
         expression: |
-          let fresh = {sha: Variables.reportedSha, summary: "Waiting for GitHub required checks", required: [], missing: [], failing: [], running: []};
+          let fresh = {
+            sha: Variables.reportedSha,
+            summary: "Waiting for GitHub required checks",
+            required: [],
+            missing: [],
+            failing: [],
+            running: [],
+            commitFound: false
+          };
           let mergeable = Variables.mergeState in ["CLEAN", "UNSTABLE", "HAS_HOOKS"];
           let named = trim(
             (len(Variables.failing) > 0 ? "Failing: " + join(Variables.failing, ", ") + "; " : "") +
@@ -235,21 +222,29 @@ spec:
             let envStatus = find(PromotionStrategy.Status.Environments, {.Branch == Branch});
             let wrcsEnv = find(WebRequestCommitStatus.Status.Environments ?? [], {.Branch == Branch});
             let lastSuccessfulSha = wrcsEnv != nil ? (wrcsEnv.LastSuccessfulSha ?? "") : "";
-            let phase = wrcsEnv != nil ? (wrcsEnv.Phase ?? "pending") : "pending";
             let idx = findIndex(PromotionStrategy.Status.Environments, #.Branch == Branch);
             let ahead = idx == nil || idx == 0 ? [] : PromotionStrategy.Status.Environments[:idx];
             let evaluatedGeneration = SuccessOutput != nil ? int(SuccessOutput.specGeneration ?? 0) : 0;
             let staleResult = lastSuccessfulSha != envStatus?.Proposed.Hydrated.Sha ||
                               evaluatedGeneration != int(WebRequestCommitStatus.Generation);
-            let doTrigger = (phase == "pending") ? true :
-              (envStatus != nil &&
+            let commitFound = SuccessOutput != nil ? (SuccessOutput.commitFound ?? false ): false;
+            let doTrigger = (not commitFound) ? true : (
+              envStatus != nil &&
               envStatus.PullRequest != nil &&
               (envStatus.PullRequest.ID ?? "") != "" &&
               string(envStatus.PullRequest.State) == "open" &&
               all(ahead, #.PullRequest == nil || string(#.PullRequest.State) != "open") &&
-              staleResult);
+              staleResult
+              );
             {
               doTrigger: doTrigger
             }
         expression: |
-          doTrigger
+          Variables.doTrigger
+        output:
+          expression: |
+            {
+              commitFound: Variables.commitFound,
+              staleResult: Variables.staleResult,
+              doTrigger: Variables.doTrigger
+            }
