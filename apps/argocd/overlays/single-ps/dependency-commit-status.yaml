@@ -6,3 +6,7 @@ spec:
   key: dependents-successful
   promotionStrategyRef:
     name: petclinic
+  environments:
+    - branch: environment/dev
+    - branch: environment/stage
+    - branch: environment/prod
