@@ -96,6 +96,21 @@ spec:
           let normalized = map(filter(nodes, (#.__typename == "CheckRun" ? #.name : #.context) in requiredNames), #.__typename == "CheckRun"
             ? {name: #.name, state: #.status != "COMPLETED" ? (#.status ?? "PENDING") : (#.conclusion ?? "UNKNOWN")}
             : {name: #.context, state: #.state ?? "UNKNOWN"});
+
+          // Add trigger variables to figure out what is happening
+          let phase = wrcsEnv != nil ? (wrcsEnv.Phase ?? "pending") : "pending";
+          let idx = findIndex(PromotionStrategy.Status.Environments, #.Branch == Branch);
+          let ahead = idx == nil || idx == 0 ? [] : PromotionStrategy.Status.Environments[:idx];
+          let evaluatedGeneration = SuccessOutput != nil ? int(SuccessOutput.specGeneration ?? 0) : 0;
+          let staleResult = lastSuccessfulSha != envStatus?.Proposed.Hydrated.Sha ||
+                            evaluatedGeneration != int(WebRequestCommitStatus.Generation);
+          let doTrigger = phase == "pending" ? true :
+            envStatus != nil &&
+            envStatus.PullRequest != nil &&
+            (envStatus.PullRequest.ID ?? "") != "" &&
+            string(envStatus.PullRequest.State) == "open" &&
+            all(ahead, #.PullRequest == nil || string(#.PullRequest.State) != "open") &&
+            staleResult;
           {
             reportedSha: envStatus != nil ? envStatus.Proposed.Hydrated.Sha : "",
             lastSuccessfulSha: wrcsEnv != nil ? (wrcsEnv.LastSuccessfulSha ?? "") : "",
@@ -109,7 +124,14 @@ spec:
             total: len(requiredNames),
             missing: missing ?? [],
             failing: map(filter(normalized, !(#.state in passed) && !(#.state in waiting)), #.name + " (" + lower(#.state) + ")"),
-            running: map(filter(normalized, #.state in waiting), #.name)
+            running: map(filter(normalized, #.state in waiting), #.name),
+
+            phase: phase,
+            idx: idx,
+            ahead: ahead,
+            evaluatedGeneration: evaluatedGeneration,
+            staleResult: staleResult,
+            doTrigger: doTrigger
           }
 
       # GraphQL answers 200 even for query errors, so errors are checked explicitly.
@@ -190,9 +212,16 @@ spec:
                               ? (blockedReason[Variables.mergeState] ?? ("Not mergeable (state: " + Variables.mergeState + ")"))
                               : (Variables.total > 0
                                   ? "All " + string(Variables.total) + (Variables.total == 1 ? " required check passed" : " required checks passed")
-                                  : "No required checks on this branch — nothing to gate on"))))
-              }
+                                  : "No required checks on this branch — nothing to gate on")))),
 
+                lastSuccessfulSha: Variables.lastSuccessfulSha,
+                phase: Variables.phase,
+                idx: Variables.idx,
+                ahead: Variables.ahead,
+                evaluatedGeneration: Variables.evaluatedGeneration,
+                staleResult: Variables.staleResult,
+                doTrigger: Variables.doTrigger
+              }
   mode:
     context: environments
     # Trigger rather than polling: only spend a GraphQL call when this environment
@@ -220,15 +249,7 @@ spec:
               all(ahead, #.PullRequest == nil || string(#.PullRequest.State) != "open") &&
               staleResult;
             {
-              envStatus: envStatus,
-              wrcsEnv: wrcsEnv,
-              lastSuccessfulSha: lastSuccessfulSha,
-              phase: phase,
-              idx: idx,
-              ahead: ahead,
-              evaluatedGeneration: evaluatedGeneration,
-              staleResult: staleResult,
               doTrigger: doTrigger
             }
         expression: |
-          doTrigger
+          true
