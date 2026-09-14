@@ -1,8 +1,8 @@
 {
-  "drySha": "ae16b957fd44bdca4f8b3dfae026068aab0373a4",
+  "drySha": "d1049be318a46c30f065db25e45f12e5d898b521",
   "repoURL": "https://github.com/org/repo",
-  "author": "argocd-image-updater <noreply@argoproj.io>",
-  "date": "2026-09-11T19:23:38Z",
-  "subject": "build: automatic update of petclinic-stage\n",
-  "body": "updates image gnunn/quarkus-petclinic tag '3dacfc6-3J9P2GAWBLn6O6PiFzCaOehXpyc' to '3dacfc6-3JC9t36kt31sUFEurM2ec3K84dv'\n\n"
+  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
+  "date": "2026-09-14T11:50:06-07:00",
+  "subject": "Trigger promotion\n",
+  "body": "\n"
 }
