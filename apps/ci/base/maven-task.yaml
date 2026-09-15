@@ -95,6 +95,13 @@ spec:
         - mountPath: /maven-generate
           name: maven-settings-dir
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
+      resources:
+        requests:
+          cpu: "1"
+          memory: "1Gi"
+        limits:
+          cpu: "6"
+          memory: "4Gi"
   volumes:
     - name: scripts-dir
     - name: maven-settings-dir
