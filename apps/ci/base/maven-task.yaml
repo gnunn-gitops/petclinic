@@ -26,9 +26,9 @@ spec:
         to execute maven goals.
       name: SUBDIRECTORY
       type: string
-    - description: Array containing string of Environment Variables as "KEY=VALUE"
-      name: ENV_VARS
-      type: array
+    # - description: Array containing string of Environment Variables as "KEY=VALUE"
+    #   name: ENV_VARS
+    #   type: array
   stepTemplate:
     env:
       - name: PARAMS_MAVEN_MIRROR_URL
@@ -75,7 +75,7 @@ spec:
         - mountPath: /maven-generate
           name: maven-settings-dir
     - args:
-        - $(params.ENV_VARS[*])
+        # - $(params.ENV_VARS[*])
         - /usr/bin/mvn
         - -s
         - maven-generate/settings.xml
