@@ -93,6 +93,7 @@ spec:
           value:
             - "package"
             - "-DskipTests"
+            - "-Dquarkus.bootstrap.blocking-task-runner=true"
     - name: build
       taskRef:
         resolver: cluster
