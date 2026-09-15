@@ -31,10 +31,11 @@ RUN microdnf --disableplugin=subscription-manager install -y openssl git tar sha
     #
     # Enable podman to create uid and gid maps for the user
     setcap cap_setuid+ep /usr/bin/newuidmap ; \
-    setcap cap_setgid+ep /usr/bin/newgidmap ; \
+    setcap cap_setgid+ep /usr/bin/newgidmap
 
 # The SCC that we are using will ensure that the user runs as UID 1000 in its own user namespace on the host node.
 USER 1000
+
 WORKDIR ${WORK_DIR}
 # Using catatonit ensures that our running container has a process reaper.  This avoids zombie processes in the container.
 ENTRYPOINT ["/usr/libexec/podman/catatonit","--","/entrypoint.sh"]

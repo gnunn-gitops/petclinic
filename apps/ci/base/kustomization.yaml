@@ -14,6 +14,7 @@ resources:
   - export-sbom-task.yaml
   - push-image-task.yaml
   - send-to-slack-task.yaml
+  - maven-task.yaml
   - pipeline-sa.yaml
   - pipeline.yaml
   - trigger.yaml
