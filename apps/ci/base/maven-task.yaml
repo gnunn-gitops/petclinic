@@ -86,7 +86,7 @@ spec:
         - name: HOME
           value: /tekton/home
       #image: registry.redhat.io/ubi9/openjdk-17@sha256:d86143b4c23ecfad5eb29e32e7c38b6577198eb746bd5903e1742e3f508c1324
-      image: https://quay.io/repository/gnunn/maven:latest
+      image: quay.io/gnunn/maven:latest
       name: maven-goals
       securityContext:
         runAsNonRoot: true
