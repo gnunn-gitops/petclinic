@@ -95,21 +95,21 @@ spec:
       #image: registry.redhat.io/ubi9/openjdk-17@sha256:d86143b4c23ecfad5eb29e32e7c38b6577198eb746bd5903e1742e3f508c1324
       image: quay.io/gnunn/maven:latest
       name: maven-goals
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 65532
       # securityContext:
-      #   capabilities:
-      #     add:
-      #       - SETGID
-      #       - SETUID
-      #     drop:
-      #       - ALL
-      #   runAsUser: 1000
       #   runAsNonRoot: true
-      #   readOnlyRootFilesystem: false
-      #   allowPrivilegeEscalation: true
-      #   procMount: Unmasked
+      #   runAsUser: 65532
+      securityContext:
+        capabilities:
+          add:
+            - SETGID
+            - SETUID
+          drop:
+            - ALL
+        runAsUser: 1000
+        runAsNonRoot: true
+        readOnlyRootFilesystem: false
+        allowPrivilegeEscalation: true
+        procMount: Unmasked
       volumeMounts:
         - mountPath: /maven-generate
           name: maven-settings-dir
