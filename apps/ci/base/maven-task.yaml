@@ -26,6 +26,10 @@ spec:
         to execute maven goals.
       name: SUBDIRECTORY
       type: string
+    - name: M2_DIRECTORY
+      type: string
+      description: Location of M2 directory, do not change
+      default: /tekton/home/.m2/
     # - description: Array containing string of Environment Variables as "KEY=VALUE"
     #   name: ENV_VARS
     #   type: array
@@ -55,6 +59,9 @@ spec:
         value: $(workspaces.maven_settings.path)
       - name: WORKSPACES_MAVEN_SETTINGS_BOUND
         value: $(workspaces.maven_settings.bound)
+    volumeMounts:
+      - name: m2-repository
+        mountPath: $(params.M2_DIRECTORY)
   steps:
     - env:
         - name: HOME
@@ -105,6 +112,9 @@ spec:
   volumes:
     - name: scripts-dir
     - name: maven-settings-dir
+    - name: m2-repository
+      persistentVolumeClaim:
+        claimName: m2-cache
   workspaces:
     - description: The workspace consisting of maven project.
       name: source
