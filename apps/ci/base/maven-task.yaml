@@ -99,6 +99,7 @@ spec:
     - args:
         # - $(params.ENV_VARS[*])
         - /usr/bin/mvn
+        - -e
         - -s
         - maven-generate/settings.xml
         - $(params.GOALS[*])
