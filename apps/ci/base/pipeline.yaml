@@ -75,6 +75,8 @@ spec:
             script: |
               #!/bin/sh
               chmod -R a+rw /workspace
+              ls -l /workspace
+              ls -l /workspace/source
       workspaces:
         - name: source
           workspace: git-source
