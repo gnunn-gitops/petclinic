@@ -76,6 +76,8 @@ spec:
               #!/bin/sh
               echo "Update permissions so any user can access files in workspace"
               chmod -R a+rwx /workspace
+
+              ls /workspace
       workspaces:
         - name: source
           workspace: git-source
