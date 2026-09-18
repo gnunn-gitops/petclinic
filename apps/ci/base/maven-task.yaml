@@ -90,9 +90,9 @@ spec:
         chmod +x /scripts/maven-*.sh;echo "Running Script /scripts/maven-generate.sh";
           /scripts/maven-generate.sh;
 
-        "Check directory permissions"
+        echo "Check directory permissions"
         ls -l /home/default
-        "Create directory"
+        echo "Create directory"
         mkdir -p /home/default/.m2/repository
       volumeMounts:
         - mountPath: /scripts
