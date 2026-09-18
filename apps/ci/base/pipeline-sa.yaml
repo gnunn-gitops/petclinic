@@ -7,4 +7,15 @@ metadata:
   name: pipeline
   namespace: petclinic-ci
 secrets:
-- name: docker-config
+  - name: docker-config
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
+    argocd.argoproj.io/compare-options: ServerSideDiff=true
+  name: pipeline-user-namespace
+  namespace: petclinic-ci
+secrets:
+  - name: docker-config
