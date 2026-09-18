@@ -1,6 +1,8 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
+  annotations:
+    io.kubernetes.cri-o.Devices: "/dev/fuse,/dev/net/tun"
   name: maven
 spec:
   description: This Task can be used to run a Maven build.
