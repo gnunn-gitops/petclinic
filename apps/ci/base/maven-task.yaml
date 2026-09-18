@@ -91,7 +91,7 @@ spec:
           /scripts/maven-generate.sh;
 
         echo "Check directory permissions"
-        ls -l /home/default
+        ls -l /home
         echo "Create directory"
         mkdir -p /home/default/.m2/repository
       volumeMounts:
