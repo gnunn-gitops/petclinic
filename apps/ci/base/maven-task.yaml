@@ -88,9 +88,9 @@ spec:
       script: |
         #chmod -R a+rwx /workspace/source
         id
-        ls -l /workspace/source
+        ls -l /workspace
         echo "Test create directory"
-        mkdir /workspace/source/permissions-test
+        mkdir /workspace/source/src/permissions-test
         echo "Test directory created"
         ls -l /workspace/source
         set -e
