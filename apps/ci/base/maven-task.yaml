@@ -59,21 +59,21 @@ spec:
         value: $(workspaces.maven_settings.path)
       - name: WORKSPACES_MAVEN_SETTINGS_BOUND
         value: $(workspaces.maven_settings.bound)
+    # securityContext:
+    #   runAsNonRoot: true
+    #   runAsUser: 65532
     securityContext:
+      capabilities:
+        add:
+          - SETGID
+          - SETUID
+        drop:
+          - ALL
+      runAsUser: 1000
       runAsNonRoot: true
-      runAsUser: 65532
-      # securityContext:
-      #   capabilities:
-      #     add:
-      #       - SETGID
-      #       - SETUID
-      #     drop:
-      #       - ALL
-      #   runAsUser: 1000
-      #   runAsNonRoot: true
-      #   readOnlyRootFilesystem: false
-      #   allowPrivilegeEscalation: true
-      #   procMount: Unmasked
+      readOnlyRootFilesystem: false
+      allowPrivilegeEscalation: true
+      procMount: Unmasked
     volumeMounts:
       - name: m2-repository
         mountPath: $(params.M2_DIRECTORY)

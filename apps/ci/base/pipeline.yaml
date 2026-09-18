@@ -92,7 +92,7 @@ spec:
         - name: GOALS
           value:
             - "package"
-            - "-DskipTests"
+            # - "-DskipTests"
             - "-Dquarkus.bootstrap.blocking-task-runner=true"
     - name: build
       taskRef:
