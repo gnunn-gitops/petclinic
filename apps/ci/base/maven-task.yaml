@@ -39,6 +39,8 @@ spec:
     env:
       - name: HOME
         value: /tekton/home
+      - name: MAVEN_OPTS
+        value: "-Dmaven.repo.local=/tekton/home/.m2"
       - name: PARAMS_MAVEN_MIRROR_URL
         value: $(params.MAVEN_MIRROR_URL)
       - name: PARAMS_SUBDIRECTORY
