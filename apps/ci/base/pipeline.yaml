@@ -67,6 +67,19 @@ spec:
       workspaces:
         - name: source
           workspace: git-source
+    - name: chmod
+      taskSpec: # Defines the task directly inside the pipeline
+        steps:
+          - name: chmod
+            image: registry.redhat.io/ubi9/ubi-minimal@sha256:8eb2830d0936237fc13a1f2f7e45aecf90d69043380ad167fad0343632937f41
+            script: |
+              #!/bin/sh
+              chmod -R a+rw /workspace
+      workspaces:
+        - name: source
+          workspace: git-source
+      runAfter:
+        - generate-id
     - name: compile
       # taskRef:
       #   kind: Task
@@ -87,7 +100,7 @@ spec:
         - name: source
           workspace: git-source
       runAfter:
-        - generate-id
+        - chmod
       params:
         - name: GOALS
           value:
