@@ -93,6 +93,8 @@ spec:
           /scripts/maven-generate.sh;
         echo "Checking files in /workspace/source"
         ls -l /workspace/source
+        echo "Outputting mounts"
+        mount
       volumeMounts:
         - mountPath: /scripts
           name: scripts-dir
