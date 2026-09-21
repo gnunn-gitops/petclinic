@@ -1,0 +1,42 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  labels:
+    tekton.dev/pipeline: petclinic
+  generateName: petclinic-
+  namespace: petclinic-ci
+spec:
+  params:
+    - name: SOURCE_GIT_REVISION
+      value: master
+    - name: SOURCE_GIT_URL
+      value: https://github.com/gnunn-gitops/quarkus-petclinic
+    - name: IMAGE_DEST_URL
+      value: quay.io/gnunn/quarkus-petclinic
+  pipelineRef:
+    name: petclinic
+  taskRunSpecs:
+    - pipelineTaskName: compile
+      serviceAccountName: pipeline-user-namespace
+      podTemplate:
+        hostUsers: false
+        securityContext:
+          fsGroup: 1000
+          runAsUser: 1000
+          runAsGroup: 1000
+          runAsNonRoot: true
+  timeouts:
+    pipeline: 1h0m0s
+  workspaces:
+    - name: git-source
+      persistentVolumeClaim:
+        claimName: source
+    - name: acs-central
+      secret:
+        secretName: acs-central
+    - name: upload-sbom
+      secret:
+        secretName: upload-sbom
+    - name: slack-deployments-webhook
+      secret:
+        secretName: slack-deployments-webhook
