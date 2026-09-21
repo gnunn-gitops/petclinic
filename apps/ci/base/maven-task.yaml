@@ -84,7 +84,8 @@ spec:
       - name: m2-repository
         mountPath: $(params.M2_DIRECTORY)
   steps:
-    - image: registry.redhat.io/ubi9/ubi-minimal@sha256:8eb2830d0936237fc13a1f2f7e45aecf90d69043380ad167fad0343632937f41
+    - image: quay.io/gnunn/maven:latest
+      #image: registry.redhat.io/ubi9/ubi-minimal@sha256:8eb2830d0936237fc13a1f2f7e45aecf90d69043380ad167fad0343632937f41
       name: maven-generate
       script: |
         set -e
