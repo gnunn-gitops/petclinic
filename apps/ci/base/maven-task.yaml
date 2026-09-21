@@ -121,6 +121,9 @@ spec:
         limits:
           cpu: "6"
           memory: "4Gi"
+      env:
+        - name: DOCKER_HOST
+          value: /run/user/1000/podman/podman.sock
   volumes:
     - name: scripts-dir
     - name: maven-settings-dir
