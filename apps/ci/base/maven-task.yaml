@@ -96,6 +96,8 @@ spec:
         ls -lan $(workspaces.source.path)
         id
         cat /proc/self/uid_map
+        echo "Check settings.xml"
+        ls $(workspaces.source.path)/maven-generate/settings.xml
       volumeMounts:
         - mountPath: /scripts
           name: scripts-dir
@@ -107,7 +109,7 @@ spec:
         - /usr/bin/mvn
         - -X
         - -s
-        - maven-generate/settings.xml
+        - $(workspaces.source.path)/maven-generate/settings.xml
         - $(params.GOALS[*])
       command:
         - /usr/bin/env
