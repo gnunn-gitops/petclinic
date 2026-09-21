@@ -16,4 +16,7 @@ if [ ! -d "${HOME}/.config/containers" ]; then
   fi
 fi
 
+# Start podman as a service for socket needed to support quarkus test containers
+podman system service --time=0 unix:///run/podman/podman.sock &
+
 exec "$@"

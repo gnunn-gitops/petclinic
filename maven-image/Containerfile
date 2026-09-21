@@ -1,6 +1,7 @@
-FROM registry.access.redhat.com/ubi10/openjdk-21
-ARG USER_HOME_DIR="/home/default"
-ARG WORK_DIR="/home/default"
+FROM registry.access.redhat.com/ubi10-minimal
+ARG USER_HOME_DIR="/tekton/home"
+ARG WORK_DIR="/tekton/home"
+ARG USER_NAME="tekton"
 
 ENV HOME=${USER_HOME_DIR}
 ENV BUILDAH_ISOLATION=chroot
@@ -9,7 +10,7 @@ COPY --chown=0:0 entrypoint.sh /
 
 USER 0
 
-RUN microdnf --disableplugin=subscription-manager install -y openssl git tar shadow-utils bash podman aardvark-dns fuse-overlayfs util-linux ; \
+RUN microdnf --disableplugin=subscription-manager install -y openssl git tar shadow-utils bash podman aardvark-dns fuse-overlayfs util-linux maven maven-openjdk21 java-21-openjdk-devel ; \
     microdnf update -y ; \
     microdnf clean all ; \
     # pip3 install cekit ; \
@@ -32,9 +33,17 @@ RUN microdnf --disableplugin=subscription-manager install -y openssl git tar sha
     # Enable podman to create uid and gid maps for the user
     setcap cap_setuid+ep /usr/bin/newuidmap ; \
     setcap cap_setgid+ep /usr/bin/newgidmap
+    #
+    # Setup podman socket for podman service started in entrypoint.sh
+    mkdir -p /run/podman; \
+    chown 1000 /run/podman
 
 # The SCC that we are using will ensure that the user runs as UID 1000 in its own user namespace on the host node.
 USER 1000
+
+ENV DOCKER_HOST=unix:///run/podman/podman.sock
+
+ENV TESTCONTAINERS_RYUK_DISABLED=true
 
 WORKDIR ${WORK_DIR}
 # Using catatonit ensures that our running container has a process reaper.  This avoids zombie processes in the container.
