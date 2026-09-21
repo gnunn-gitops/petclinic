@@ -85,7 +85,6 @@ spec:
     #     mountPath: $(params.M2_DIRECTORY)
   steps:
     - image: quay.io/gnunn/maven:latest
-      #image: registry.redhat.io/ubi9/ubi-minimal@sha256:8eb2830d0936237fc13a1f2f7e45aecf90d69043380ad167fad0343632937f41
       name: maven-generate
       script: |
         set -e
@@ -119,9 +118,10 @@ spec:
         ls -l .
         echo "Checking files in full path"
         ls -l $(workspaces.source.path)
+        echo "Check settings.xml"
+        ls -l $(workspaces.source.path)/maven-generate/settings.xml
         echo "Running Maven"
         mvn -X -s $(workspaces.source.path)/maven-generate/settings.xml "$@"
-      #image: registry.redhat.io/ubi9/openjdk-17@sha256:d86143b4c23ecfad5eb29e32e7c38b6577198eb746bd5903e1742e3f508c1324
       image: quay.io/gnunn/maven:latest
       name: maven-goals
       volumeMounts:
