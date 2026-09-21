@@ -81,7 +81,7 @@ spec:
               echo "Checking if files are present in /workspace"
               ls -l /workspace
               echo "/workspace/source"
-              ls -l /workspace/worksource
+              ls -l /workspace/source
       workspaces:
         - name: source
           workspace: git-source
