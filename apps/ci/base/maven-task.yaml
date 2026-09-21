@@ -110,10 +110,11 @@ spec:
         - mountPath: /maven-generate
           name: maven-settings-dir
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
-    - script: |
+    - args:
+        - "$(params.GOALS[*])"
+      script: |
         ls -l .
-
-        /usr/bin/mvn -X -s ./maven-generate/settings.xml $(params.GOALS[*])
+        /usr/bin/mvn -X -s ./maven-generate/settings.xml "$@"
       #image: registry.redhat.io/ubi9/openjdk-17@sha256:d86143b4c23ecfad5eb29e32e7c38b6577198eb746bd5903e1742e3f508c1324
       image: quay.io/gnunn/maven:latest
       name: maven-goals
