@@ -109,7 +109,7 @@ spec:
         - /usr/bin/mvn
         - -X
         - -s
-        - $(workspaces.source.path)/maven-generate/settings.xml
+        - $(workspaces.source.path)/$(params.SUBDIRECTORY)/maven-generate/settings.xml
         - $(params.GOALS[*])
       command:
         - /usr/bin/env
