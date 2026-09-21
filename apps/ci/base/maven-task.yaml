@@ -93,7 +93,7 @@ spec:
         chmod +x /scripts/maven-*.sh;echo "Running Script /scripts/maven-generate.sh";
           /scripts/maven-generate.sh;
         echo "Debugging"
-        ls -lan $(workspaces.<name>.path)
+        ls -lan $(workspaces.source.path)
         id
         cat /proc/self/uid_map
       volumeMounts:
