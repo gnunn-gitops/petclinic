@@ -75,8 +75,13 @@ spec:
             script: |
               #!/bin/sh
               echo "Update permissions so any user can access files in workspace"
-              chmod -R a+rwx /workspace
-              ls /workspace
+              chmod -R a+rwx /workspace/source
+              echo "Checking permissions in root"
+              ls -l /
+              echo "Checking if files are present in /workspace"
+              ls -l /workspace
+              echo "/workspace/source"
+              ls - l /workspace/worksource
       workspaces:
         - name: source
           workspace: git-source
