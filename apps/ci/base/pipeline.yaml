@@ -91,6 +91,7 @@ spec:
       params:
         - name: GOALS
           value:
+            - "clean"
             - "package"
     - name: build
       taskRef:
