@@ -86,9 +86,9 @@ spec:
           name: scripts-dir
         - mountPath: /maven-generate
           name: maven-settings-dir
-        # - name: m2-repository
-        #   mountPath: /tekton/home/.m2
-        #   subPath: ".m2"
+        - name: m2-repository
+          mountPath: /tekton/home/.m2
+          subPath: ".m2"
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
     - args:
         - mvn
@@ -100,9 +100,9 @@ spec:
       volumeMounts:
         - mountPath: /maven-generate
           name: maven-settings-dir
-        # - name: m2-repository
-        #   mountPath: /tekton/home/.m2
-        #   subPath: ".m2"
+        - name: m2-repository
+          mountPath: /tekton/home/.m2
+          subPath: ".m2"
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
       computeResources:
         requests:
@@ -114,9 +114,9 @@ spec:
   volumes:
     - name: scripts-dir
     - name: maven-settings-dir
-    # - name: m2-repository
-    #   persistentVolumeClaim:
-    #     claimName: m2-cache
+    - name: m2-repository
+      persistentVolumeClaim:
+        claimName: m2-cache
   workspaces:
     - description: The workspace consisting of maven project.
       name: source
