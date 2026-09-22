@@ -121,7 +121,7 @@ spec:
         echo "Check settings.xml"
         ls -l $(workspaces.source.path)/maven-generate/settings.xml
         echo "Running Maven with goals $@"
-        mvn -X -s $(workspaces.source.path)/maven-generate/settings.xml "$@"
+        mvn -s $(workspaces.source.path)/maven-generate/settings.xml "$@"
       image: quay.io/gnunn/maven:latest
       name: maven-goals
       volumeMounts:
