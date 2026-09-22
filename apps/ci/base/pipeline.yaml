@@ -92,7 +92,6 @@ spec:
         - name: GOALS
           value:
             - "package"
-            - "-DskipTests"
     - name: build
       taskRef:
         resolver: cluster
