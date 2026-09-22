@@ -1,6 +1,7 @@
 FROM registry.access.redhat.com/ubi10-minimal
 ARG USER_HOME_DIR="/tekton/home"
 ARG WORK_DIR="/tekton/home"
+ARG M2_HOME_DIR="/tekton/home/.m2"
 ARG USER_NAME="tekton"
 
 ENV HOME=${USER_HOME_DIR}
@@ -13,17 +14,20 @@ USER 0
 RUN microdnf --disableplugin=subscription-manager install -y openssl git tar shadow-utils bash podman aardvark-dns fuse-overlayfs util-linux maven maven-openjdk21 java-21-openjdk-devel ; \
     microdnf update -y ; \
     microdnf clean all ; \
-    # pip3 install cekit ; \
     chmod +x /entrypoint.sh ; \
     ##
     ## Setup for root-less podman
     ##
     # Create the User's home directory
-    # mkdir -p ${USER_HOME_DIR} ; \
-    # chown -R 1000:1000 ${USER_HOME_DIR} ; \
+    mkdir -p ${USER_HOME_DIR} ; \
+    chown -R 1000:1000 ${USER_HOME_DIR} ; \
     #
+    # Create the M2 home directory to support M2 caching in Tekton
+    mkdir -p ${M2_HOME_DIR} ; \
+    chown -R 1000:1000 ${M2_HOME_DIR} ; \
+
     # Add the user to /etc/passwd and /etc/group
-    echo "user:x:1000:1000:devspaces user:${USER_HOME_DIR}:/bin/bash" >> /etc/passwd ; \
+    echo "user:x:1000:1000:tekton user:${USER_HOME_DIR}:/bin/bash" >> /etc/passwd ; \
     echo "user:x:1000:" >> /etc/group ; \
     #
     # Add entries for uid and gid mappings for the user
