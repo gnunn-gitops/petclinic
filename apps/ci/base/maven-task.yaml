@@ -28,10 +28,6 @@ spec:
         to execute maven goals.
       name: SUBDIRECTORY
       type: string
-    - name: M2_DIRECTORY
-      type: string
-      description: Location of M2 directory, do not change
-      default: /tekton/home/.m2/
     # - description: Array containing string of Environment Variables as "KEY=VALUE"
     #   name: ENV_VARS
     #   type: array
@@ -106,7 +102,8 @@ spec:
         - mountPath: /maven-generate
           name: maven-settings-dir
         - name: m2-repository
-          mountPath: $(params.M2_DIRECTORY)
+          mountPath: /tekton/home/.m2
+          subPath: ".m2"
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
     - args:
         - "$(params.GOALS[*])"
@@ -127,7 +124,8 @@ spec:
         - mountPath: /maven-generate
           name: maven-settings-dir
         - name: m2-repository
-          mountPath: $(params.M2_DIRECTORY)
+          mountPath: /tekton/home/.m2
+          subPath: ".m2"
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
       computeResources:
         requests:
