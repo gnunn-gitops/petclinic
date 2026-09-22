@@ -67,26 +67,6 @@ spec:
       workspaces:
         - name: source
           workspace: git-source
-    # - name: chmod
-    #   taskSpec: # Defines the task directly inside the pipeline
-    #     steps:
-    #       - name: chmod
-    #         image: registry.redhat.io/ubi9/ubi-minimal@sha256:8eb2830d0936237fc13a1f2f7e45aecf90d69043380ad167fad0343632937f41
-    #         script: |
-    #           #!/bin/sh
-    #           echo "Update permissions so any user can access files in workspace"
-    #           chmod -R a+rwx /workspace/source
-    #           echo "Checking permissions in root"
-    #           ls -l /
-    #           echo "Checking if files are present in /workspace"
-    #           ls -l /workspace
-    #           echo "/workspace/source"
-    #           ls -l /workspace/source
-    #   workspaces:
-    #     - name: source
-    #       workspace: git-source
-    #   runAfter:
-    #     - generate-id
     - name: compile
       # taskRef:
       #   kind: Task
