@@ -36,7 +36,7 @@ spec:
       - name: HOME
         value: /tekton/home
       - name: MAVEN_OPTS
-        value: "-Dmaven.repo.local=/tekton/home/.m2"
+        value: "-Dmaven.repo.local=/.m2"
       - name: PARAMS_MAVEN_MIRROR_URL
         value: $(params.MAVEN_MIRROR_URL)
       - name: PARAMS_SUBDIRECTORY
@@ -87,8 +87,7 @@ spec:
         - mountPath: /maven-generate
           name: maven-settings-dir
         - name: m2-repository
-          mountPath: /tekton/home/.m2
-          subPath: ".m2"
+          mountPath: /.m2
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
     - args:
         - mvn
@@ -101,8 +100,7 @@ spec:
         - mountPath: /maven-generate
           name: maven-settings-dir
         - name: m2-repository
-          mountPath: /tekton/home/.m2
-          subPath: ".m2"
+          mountPath: .m2
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
       computeResources:
         requests:
