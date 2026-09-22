@@ -91,10 +91,10 @@ spec:
         #   subPath: ".m2"
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
     - args:
+        - mvn
+        - -s
+        - $(workspaces.source.path)/maven-generate/settings.xml
         - "$(params.GOALS[*])"
-      script: |
-        echo "Running Maven with goals $@"
-        mvn -s $(workspaces.source.path)/maven-generate/settings.xml "$@"
       image: quay.io/gnunn/maven:latest
       name: maven-goals
       volumeMounts:
