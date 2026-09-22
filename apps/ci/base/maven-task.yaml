@@ -137,7 +137,9 @@ spec:
           memory: "4Gi"
       env:
         - name: DOCKER_HOST
-          value: /run/podman/podman.sock
+          value: unix:///run/podman/podman.sock
+        - name: TESTCONTAINERS_RYUK_DISABLED
+          value: "true"
   volumes:
     - name: scripts-dir
     - name: maven-settings-dir
