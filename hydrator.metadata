@@ -1,8 +1,8 @@
 {
-  "drySha": "d119cb1e2be855ac96c9f96412f3745af3630075",
+  "drySha": "35688a72046bf72627a9530b8fd47ee44de959f7",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-09-23T16:02:40-07:00",
-  "subject": "Reduce requests\n",
+  "date": "2026-09-23T16:15:26-07:00",
+  "subject": "Reduce replicas\n",
   "body": "\n"
 }
