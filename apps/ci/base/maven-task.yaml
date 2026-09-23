@@ -89,11 +89,15 @@ spec:
         - name: m2-repository
           mountPath: /.m2
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
+    # - args:
+    #     - mvn
+    #     - -s
+    #     - $(workspaces.source.path)/maven-generate/settings.xml
+    #     - "$(params.GOALS[*])"
     - args:
-        - mvn
-        - -s
-        - $(workspaces.source.path)/maven-generate/settings.xml
         - "$(params.GOALS[*])"
+      script: |
+        mvn -s $(workspaces.source.path)/maven-generate/settings.xml "$@"
       image: quay.io/gnunn/maven:latest
       name: maven-goals
       volumeMounts:
