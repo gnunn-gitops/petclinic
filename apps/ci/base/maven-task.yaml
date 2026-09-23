@@ -97,6 +97,9 @@ spec:
     - args:
         - "$(params.GOALS[*])"
       script: |
+        echo "Checking workspace/source directory"
+        ls $(workspaces.source.path)
+
         podman system service --time=0 unix:///run/podman/podman.sock &
 
         mvn -s $(workspaces.source.path)/maven-generate/settings.xml "$@"
