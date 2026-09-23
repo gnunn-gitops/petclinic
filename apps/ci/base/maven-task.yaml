@@ -35,8 +35,6 @@ spec:
     env:
       - name: HOME
         value: /home/default
-      # - name: MAVEN_OPTS
-      #   value: "-Dmaven.repo.local=${HOME}/.m2"
       - name: PARAMS_MAVEN_MIRROR_URL
         value: $(params.MAVEN_MIRROR_URL)
       - name: PARAMS_SUBDIRECTORY

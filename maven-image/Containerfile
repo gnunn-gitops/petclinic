@@ -51,7 +51,5 @@ ENV TESTCONTAINERS_REUSE_ENABLE=false
 
 WORKDIR ${WORK_DIR}
 # Using catatonit ensures that our running container has a process reaper.  This avoids zombie processes in the container.
-#ENTRYPOINT ["/usr/libexec/podman/catatonit","--","/entrypoint.sh"]
-# Don't use catatonit with tekton because we don't want our podman service reaped and the container is short lived so the process is cleaned up by cgroups
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/usr/libexec/podman/catatonit","--","/entrypoint.sh"]
 CMD [ "tail", "-f", "/dev/null" ]
