@@ -97,6 +97,8 @@ spec:
     - args:
         - "$(params.GOALS[*])"
       script: |
+        podman system service --time=0 unix:///run/podman/podman.sock &
+
         mvn -s $(workspaces.source.path)/maven-generate/settings.xml "$@"
       image: quay.io/gnunn/maven:latest
       name: maven-goals
