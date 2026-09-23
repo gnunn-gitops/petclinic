@@ -110,6 +110,8 @@ spec:
           name: maven-settings-dir
         - name: m2-repository
           mountPath: /home/default/.m2
+        - name: containers
+          mountPath: /home/default/.local/share/containers
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
       computeResources:
         requests:
@@ -124,6 +126,9 @@ spec:
     - name: m2-repository
       persistentVolumeClaim:
         claimName: m2-cache
+    - name: containers
+      persistentVolumeClaim:
+        claimName: container-cache
   workspaces:
     - description: The workspace consisting of maven project.
       name: source
