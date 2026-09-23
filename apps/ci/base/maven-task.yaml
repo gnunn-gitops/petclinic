@@ -89,20 +89,11 @@ spec:
         - name: m2-repository
           mountPath: /.m2
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
-    # - args:
-    #     - mvn
-    #     - -s
-    #     - $(workspaces.source.path)/maven-generate/settings.xml
-    #     - "$(params.GOALS[*])"
     - args:
+        - mvn
+        - -s
+        - $(workspaces.source.path)/maven-generate/settings.xml
         - "$(params.GOALS[*])"
-      script: |
-        echo "Checking workspace/source directory"
-        ls $(workspaces.source.path)
-
-        podman system service --time=0 unix:///run/podman/podman.sock &
-
-        mvn -s $(workspaces.source.path)/maven-generate/settings.xml "$@"
       image: quay.io/gnunn/maven:latest
       name: maven-goals
       volumeMounts:
@@ -110,8 +101,6 @@ spec:
           name: maven-settings-dir
         - name: m2-repository
           mountPath: /home/default/.m2
-        - name: containers
-          mountPath: /home/default/.local/share/containers
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
       computeResources:
         requests:
@@ -126,9 +115,6 @@ spec:
     - name: m2-repository
       persistentVolumeClaim:
         claimName: m2-cache
-    - name: containers
-      persistentVolumeClaim:
-        claimName: container-cache
   workspaces:
     - description: The workspace consisting of maven project.
       name: source
