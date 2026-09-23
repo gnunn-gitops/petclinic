@@ -34,9 +34,9 @@ spec:
   stepTemplate:
     env:
       - name: HOME
-        value: /tekton/home
-      - name: MAVEN_OPTS
-        value: "-Dmaven.repo.local=/.m2"
+        value: /home/default
+      # - name: MAVEN_OPTS
+      #   value: "-Dmaven.repo.local=${HOME}/.m2"
       - name: PARAMS_MAVEN_MIRROR_URL
         value: $(params.MAVEN_MIRROR_URL)
       - name: PARAMS_SUBDIRECTORY
@@ -101,7 +101,7 @@ spec:
         - mountPath: /maven-generate
           name: maven-settings-dir
         - name: m2-repository
-          mountPath: .m2
+          mountPath: /home/default/.m2
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
       computeResources:
         requests:

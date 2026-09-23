@@ -1,8 +1,7 @@
 FROM registry.access.redhat.com/ubi10-minimal
-ARG USER_HOME_DIR="/tekton/home"
-ARG WORK_DIR="/tekton/home"
-ARG M2_HOME_DIR="/.m2"
-ARG USER_NAME="tekton"
+ARG USER_HOME_DIR="/home/default"
+ARG WORK_DIR="/home/default"
+ARG M2_HOME_DIR="/home/default/.m2"
 
 ENV HOME=${USER_HOME_DIR}
 ENV BUILDAH_ISOLATION=chroot
@@ -19,15 +18,15 @@ RUN microdnf --disableplugin=subscription-manager install -y openssl git tar sha
     ## Setup for root-less podman
     ##
     # Create the User's home directory
-    #mkdir -p ${USER_HOME_DIR} ; \
-    #chown -R 1000:1000 ${USER_HOME_DIR} ; \
+    mkdir -p ${USER_HOME_DIR} ; \
+    chown -R 1000:1000 ${USER_HOME_DIR} ; \
     #
     # Create the M2 home directory to support M2 caching in Tekton
     mkdir -p ${M2_HOME_DIR} ; \
     chown -R 1000:1000 ${M2_HOME_DIR} ; \
 
     # Add the user to /etc/passwd and /etc/group
-    echo "user:x:1000:1000:tekton user:${USER_HOME_DIR}:/bin/bash" >> /etc/passwd ; \
+    echo "user:x:1000:1000:default user:${USER_HOME_DIR}:/bin/bash" >> /etc/passwd ; \
     echo "user:x:1000:" >> /etc/group ; \
     #
     # Add entries for uid and gid mappings for the user
