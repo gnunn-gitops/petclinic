@@ -1,8 +1,8 @@
 {
-  "drySha": "510115cd0a9a4721339c024ee44f9c57090d6537",
+  "drySha": "d119cb1e2be855ac96c9f96412f3745af3630075",
   "repoURL": "https://github.com/org/repo",
-  "author": "argocd-image-updater <noreply@argoproj.io>",
-  "date": "2026-09-22T22:03:29Z",
-  "subject": "build: automatic update of petclinic-stage\n",
-  "body": "updates image gnunn/quarkus-petclinic tag 'cabd04a-3JhUf3tl6NRVohZJk9FeRm3qYtE' to 'cabd04a-3JhXlEnYHHTt681gKgcaGU3FV3H'\n\n"
+  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
+  "date": "2026-09-23T16:02:40-07:00",
+  "subject": "Reduce requests\n",
+  "body": "\n"
 }
