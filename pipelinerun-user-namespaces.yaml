@@ -30,6 +30,13 @@ spec:
     pipeline: 1h0m0s
   workspaces:
     - name: git-source
+      # volumeClaimTemplate:
+      #   spec:
+      #     accessModes:
+      #       - ReadWriteOnce
+      #     resources:
+      #       requests:
+      #         storage: 1Gi
       persistentVolumeClaim:
         claimName: source
     - name: acs-central

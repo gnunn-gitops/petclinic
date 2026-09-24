@@ -92,7 +92,8 @@ spec:
         - -s
         - $(workspaces.source.path)/maven-generate/settings.xml
         - "$(params.GOALS[*])"
-      image: quay.io/gnunn/maven:latest
+      #image: quay.io/gnunn/maven:latest
+      image: registry.redhat.io/ubi9/openjdk-17@sha256:67b6724bc5a1fe8a652d78adbaf4ddf9398d2fa2c433b3d4c00c02f6a1df9b00
       name: maven-goals
       volumeMounts:
         - mountPath: /maven-generate
