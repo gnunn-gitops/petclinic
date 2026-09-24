@@ -68,21 +68,21 @@ spec:
         - name: source
           workspace: git-source
     - name: compile
-      # taskRef:
-      #   kind: Task
-      #   params:
-      #     - name: pathInRepo
-      #       value: task/maven/1.0/maven.yaml
-      #   resolver: git
       taskRef:
-        resolver: cluster
+        kind: Task
         params:
-          - name: kind
-            value: task
-          - name: name
-            value: maven
-          - name: namespace
-            value: petclinic-ci
+          - name: pathInRepo
+            value: task/maven/1.0/maven.yaml
+        resolver: git
+      # taskRef:
+      #   resolver: cluster
+      #   params:
+      #     - name: kind
+      #       value: task
+      #     - name: name
+      #       value: maven
+      #     - name: namespace
+      #       value: petclinic-ci
       workspaces:
         - name: source
           workspace: git-source
