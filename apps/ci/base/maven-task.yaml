@@ -110,7 +110,8 @@ spec:
         - podman
         - system
         - service
-        - --time=0
+        - --time
+        - 120
         - unix:///run/podman/podman.sock
       computeResources:
         requests:
