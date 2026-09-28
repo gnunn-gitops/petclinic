@@ -92,14 +92,16 @@ spec:
         - -s
         - $(workspaces.source.path)/maven-generate/settings.xml
         - "$(params.GOALS[*])"
-      #image: quay.io/gnunn/maven:latest
-      image: registry.redhat.io/ubi9/openjdk-17:1.24
+      image: quay.io/gnunn/maven:latest
+      #image: registry.redhat.io/ubi9/openjdk-17:1.24
       name: maven-goals
       volumeMounts:
         - mountPath: /maven-generate
           name: maven-settings-dir
         - name: m2-repository
           mountPath: /home/default/.m2
+        - mountPath: /var/run/podman
+          name: podman-socket
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
       computeResources:
         requests:
@@ -108,7 +110,35 @@ spec:
         limits:
           cpu: "6"
           memory: "4Gi"
+  sidecars:
+    - image: quay.io/gnunn/maven:latest
+      name: podman
+      args:
+        - podman
+        - system
+        - service
+        - --time=0
+        - unix:///run/podman/podman.sock
+      securityContext:
+        capabilities:
+          add:
+            - SETGID
+            - SETUID
+          drop:
+            - ALL
+        runAsUser: 1000
+        runAsNonRoot: true
+        readOnlyRootFilesystem: false
+        allowPrivilegeEscalation: true
+        procMount: Unmasked
+      volumeMounts:
+        # - mountPath: /var/lib/docker
+        #   name: dind-storage
+        - mountPath: /var/run/podman
+          name: podman-socket
   volumes:
+    - name: podman-socket
+      emptyDir: {}
     - name: scripts-dir
     - name: maven-settings-dir
     - name: m2-repository
