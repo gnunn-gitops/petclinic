@@ -103,13 +103,6 @@ spec:
         - mountPath: /var/run/podman
           name: podman-socket
       workingDir: $(workspaces.source.path)/$(params.SUBDIRECTORY)
-      computeResources:
-        requests:
-          cpu: "1"
-          memory: "1Gi"
-        limits:
-          cpu: "6"
-          memory: "4Gi"
   sidecars:
     - image: quay.io/gnunn/maven:v0.0.1
       name: podman
@@ -119,6 +112,13 @@ spec:
         - service
         - --time=0
         - unix:///run/podman/podman.sock
+      computeResources:
+        requests:
+          cpu: "1"
+          memory: "1Gi"
+        limits:
+          cpu: "6"
+          memory: "4Gi"
       securityContext:
         capabilities:
           add:
