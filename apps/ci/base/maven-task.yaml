@@ -92,7 +92,7 @@ spec:
         - -s
         - $(workspaces.source.path)/maven-generate/settings.xml
         - "$(params.GOALS[*])"
-      image: quay.io/gnunn/maven:latest
+      image: quay.io/gnunn/maven:v0.0.1
       #image: registry.redhat.io/ubi9/openjdk-17:1.24
       name: maven-goals
       volumeMounts:
@@ -111,7 +111,7 @@ spec:
           cpu: "6"
           memory: "4Gi"
   sidecars:
-    - image: quay.io/gnunn/maven:latest
+    - image: quay.io/gnunn/maven:v0.0.1
       name: podman
       args:
         - podman
