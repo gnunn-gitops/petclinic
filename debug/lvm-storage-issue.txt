@@ -17,6 +17,11 @@ $ fuser -mv /dev/vg1/217efd3c-fcfe-483e-b475-952a9f2f9f78
                      USER        PID ACCESS COMMAND
 /dev/dm-10:          root     kernel mount /var/lib/kubelet/pods/f5001267-54f7-4737-8628-948477c4c7df/volumes/kubernetes.io~empty-dir/tekton-internal-workspace/source
 
+Checking if the pod still exists returns nothing as expected. I'm deleting the PipelineRun which deletes the pod and the PVC created with the volume template in pipelinerun-user-namespaces.yaml
+
+$ oc get pods -A -o custom-columns=NS:.metadata.namespace,NAME:.metadata.name,UID:.metadata.uid,NODE:.spec.nodeName,PHASE:.status.phase | grep f5001267
+$
+
 crictl for processes in petclinic-ci namespace where PVC and Pipelines exist:
 
 cat crictl-processes.txt | grep petclinic-ci
