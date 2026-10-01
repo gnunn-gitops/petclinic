@@ -3,6 +3,8 @@ kind: PromotionStrategy
 metadata:
   name: petclinic
 spec:
+  activeCommitStatuses:
+    - key: argocd-health-petclinic
   environments:
     - autoMerge: true
       branch: environment/dev
