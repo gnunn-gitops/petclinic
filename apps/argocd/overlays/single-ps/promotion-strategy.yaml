@@ -3,16 +3,6 @@ kind: PromotionStrategy
 metadata:
   name: petclinic
 spec:
-  activeCommitStatuses:
-    - key: argocd-health-petclinic
-    - key: acs-policy-violation
-  proposedCommitStatuses:
-    - key: dependents-successful
-    - key: github-required-checks
-  orderCommitStatusRef:
-    group: promoter.argoproj.io
-    kind: DependentsSuccessfulCommitStatus
-    name: petclinic
   environments:
     - autoMerge: true
       branch: environment/dev
