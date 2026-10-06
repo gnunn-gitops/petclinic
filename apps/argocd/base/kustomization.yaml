@@ -10,4 +10,4 @@ resources:
   - gitops-promoter-github-app-key.yaml
   - scm-provider.yaml
   - git-repository.yaml
-  - image-updater.yaml
+  # - image-updater.yaml
