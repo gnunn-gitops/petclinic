@@ -1,8 +1,8 @@
 {
-  "drySha": "ad0db2f5c9587a7ae884850e381ab53033027f9b",
+  "drySha": "a12d223b2003b8716410c0b83d47f51ef87b7e30",
   "repoURL": "https://github.com/org/repo",
   "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-10-21T13:41:40-07:00",
-  "subject": "Adjust route-url parameter\n",
+  "date": "2026-10-21T13:58:32-07:00",
+  "subject": "Permit one failure on smoke test\n",
   "body": "\n"
 }
