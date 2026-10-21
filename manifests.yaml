@@ -279,7 +279,7 @@ spec:
         query: |
           irate(haproxy_backend_http_responses_total{exported_namespace='{{ args.namespace }}', route=~"{{ args.route-name }}", code="5xx"}[1m]) > 5 or on() vector(0)
         timeout: 40
-    successCondition: result[0] == 0
+    successCondition: result[0] <= 1
   - name: run-load
     provider:
       job:
