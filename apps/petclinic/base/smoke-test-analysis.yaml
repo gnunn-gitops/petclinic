@@ -18,8 +18,8 @@ spec:
     - name: success-rate
       interval: 20s
       count: 3
-      successCondition: result[0] <= 1
-      failureLimit: 0
+      successCondition: result[0] == 0
+      failureLimit: 1
       provider:
         prometheus:
           address: https://thanos-querier.openshift-monitoring.svc.cluster.local:9091
