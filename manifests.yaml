@@ -289,7 +289,7 @@ spec:
             spec:
               containers:
               - args:
-                - siege -c 20 -d5 -t2M -v http://{{args.route-url}}
+                - siege -c 20 -d5 -t2M -v {{args.route-url}}
                 command:
                 - sh
                 - -c
@@ -365,7 +365,7 @@ spec:
             secretKeyRef:
               key: database-password
               name: petclinic-db
-        image: quay.io/gnunn/quarkus-petclinic:cabd04a-3KHw0okGaCfh6WoaL0YSUaGGE5x
+        image: quay.io/gnunn/quarkus-petclinic:cabd04a-3L0fWCmFKrAByclfTAMf9QXcTSc
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
