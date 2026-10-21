@@ -1,8 +1,8 @@
 {
-  "drySha": "2c1bf45457810b59d98554dc5ec6863772e433ee",
+  "drySha": "60705d304718856f58f46e85434d7577b568d950",
   "repoURL": "https://github.com/org/repo",
-  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-10-21T08:39:04-07:00",
-  "subject": "Fix Siege URL\n",
-  "body": "\n"
+  "author": "argocd-image-updater <noreply@argoproj.io>",
+  "date": "2026-10-21T20:30:11Z",
+  "subject": "build: automatic update of petclinic-stage\n",
+  "body": "updates image gnunn/quarkus-petclinic tag 'cabd04a-3L0fWCmFKrAByclfTAMf9QXcTSc' to 'cabd04a-3L1Gw20pv3iXfPpENftmBnOVqxV'\n\n"
 }
