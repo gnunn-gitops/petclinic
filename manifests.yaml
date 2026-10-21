@@ -289,7 +289,7 @@ spec:
             spec:
               containers:
               - args:
-                - siege -c 20 -d5 -t2M -v {{args.route-url}}
+                - siege -c 20 -d5 -t2M -v https://{{args.route-url}}
                 command:
                 - sh
                 - -c
@@ -334,7 +334,7 @@ spec:
           - name: route-name
             value: petclinic-canary
           - name: route-url
-            value: https://petclinic-canary-petclinic-dev.apps.home.ocplab.com/
+            value: petclinic-canary-petclinic-dev.apps.home.ocplab.com
           templates:
           - templateName: smoke-test
       - setWeight: 100
