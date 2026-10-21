@@ -266,7 +266,7 @@ spec:
         name: monitor-auth-secret
   metrics:
   - count: 3
-    failureLimit: 0
+    failureLimit: 1
     interval: 20s
     name: success-rate
     provider:
@@ -289,7 +289,7 @@ spec:
             spec:
               containers:
               - args:
-                - siege -c 20 -d5 -t2M -v {{args.route-url}}
+                - siege -c 20 -d5 -t2M -v https://{{args.route-url}}
                 command:
                 - sh
                 - -c
@@ -334,7 +334,7 @@ spec:
           - name: route-name
             value: petclinic-canary
           - name: route-url
-            value: https://petclinic-canary-petclinic-prod.apps.home.ocplab.com/
+            value: petclinic-canary-petclinic-prod.apps.home.ocplab.com
           templates:
           - templateName: smoke-test
       - setWeight: 100
@@ -365,7 +365,7 @@ spec:
             secretKeyRef:
               key: database-password
               name: petclinic-db
-        image: quay.io/gnunn/quarkus-petclinic:cabd04a-3L0fWCmFKrAByclfTAMf9QXcTSc
+        image: quay.io/gnunn/quarkus-petclinic:cabd04a-3L1NtUKxjHWhPIIqM56Yx8FdK4N
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
