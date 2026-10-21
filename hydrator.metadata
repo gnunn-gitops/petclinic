@@ -1,8 +1,8 @@
 {
-  "drySha": "a12d223b2003b8716410c0b83d47f51ef87b7e30",
+  "drySha": "60b9a85860a555bdd4834cc9e109a11d7d677a76",
   "repoURL": "https://github.com/org/repo",
-  "author": "Gerald Nunn <gerald.b.nunn@gmail.com>",
-  "date": "2026-10-21T13:58:32-07:00",
-  "subject": "Permit one failure on smoke test\n",
-  "body": "\n"
+  "author": "argocd-image-updater <noreply@argoproj.io>",
+  "date": "2026-10-21T21:05:00Z",
+  "subject": "build: automatic update of petclinic-stage\n",
+  "body": "updates image gnunn/quarkus-petclinic tag 'cabd04a-3L0fWCmFKrAByclfTAMf9QXcTSc' to 'cabd04a-3L1LEffSZV1gjzhOsqIz5qwgPh0'\n\n"
 }
