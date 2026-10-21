@@ -30,9 +30,6 @@ spec:
           - name: git-source
             persistentVolumeClaim:
               claimName: source
-          - name: m2-cache
-            persistentVolumeClaim:
-              claimName: m2-cache
           - name: acs-central
             secret:
               secretName: acs-central
