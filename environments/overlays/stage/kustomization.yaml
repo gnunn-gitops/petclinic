@@ -11,7 +11,7 @@ patches:
   - patch: |
       - op: replace
         path: /spec/strategy/canary/steps/1/analysis/args/2/value
-        value: https://petclinic-canary-petclinic-stage.apps.home.ocplab.com/
+        value: petclinic-canary-petclinic-stage.apps.home.ocplab.com
     target:
       kind: Rollout
       name: petclinic
