@@ -289,7 +289,7 @@ spec:
             spec:
               containers:
               - args:
-                - siege -c 20 -d5 -t2M -v http://{{args.route-url}}
+                - siege -c 20 -d5 -t2M -v {{args.route-url}}
                 command:
                 - sh
                 - -c
