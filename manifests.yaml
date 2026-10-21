@@ -266,7 +266,7 @@ spec:
         name: monitor-auth-secret
   metrics:
   - count: 3
-    failureLimit: 0
+    failureLimit: 1
     interval: 20s
     name: success-rate
     provider:
@@ -279,7 +279,7 @@ spec:
         query: |
           irate(haproxy_backend_http_responses_total{exported_namespace='{{ args.namespace }}', route=~"{{ args.route-name }}", code="5xx"}[1m]) > 5 or on() vector(0)
         timeout: 40
-    successCondition: result[0] <= 1
+    successCondition: result[0] == 0
   - name: run-load
     provider:
       job:
