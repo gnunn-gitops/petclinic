@@ -14,3 +14,7 @@ spec:
       branch: environment/prod
   gitRepositoryRef:
     name: petclinic
+  orderCommitStatusRef:
+    group: promoter.argoproj.io
+    kind: DependentsSuccessfulCommitStatus
+    name: petclinic
