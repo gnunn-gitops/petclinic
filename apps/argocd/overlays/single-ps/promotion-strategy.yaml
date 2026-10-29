@@ -6,7 +6,7 @@ spec:
   activeCommitStatuses:
     - key: argocd-health-petclinic
     - key: acs-policy-violation
-  proposedCommitStatus:
+  proposedCommitStatuses:
     - key: github-required-checks
   environments:
     - autoMerge: true
