@@ -1,6 +1,8 @@
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
+  labels:
+    promoter.argoproj.io/webrequestcommitstatus-access: allowed
   name: gitops-promoter-github-app
 spec:
   refreshInterval: 1h
@@ -10,6 +12,6 @@ spec:
   target:
     creationPolicy: Owner
   data:
-  - secretKey: githubAppPrivateKey
-    remoteRef:
-      key: GITOPS_PROMOTER_GITHUB_KEY
+    - secretKey: githubAppPrivateKey
+      remoteRef:
+        key: GITOPS_PROMOTER_GITHUB_KEY
