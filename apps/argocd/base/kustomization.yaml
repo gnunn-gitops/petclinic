@@ -4,12 +4,10 @@ kind: Kustomization
 namespace: petclinic-argocd
 
 resources:
-  - image-updater-role.yaml
   - github-external-secret.yaml
   - gitops-promoter-github-app-key.yaml
   - scm-provider.yaml
   - git-repository.yaml
-  - image-updater.yaml
   - argocd-commit-status.yaml
   - github-checks-commit-status.yaml
   - dependency-commit-status.yaml
