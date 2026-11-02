@@ -3,8 +3,6 @@ kind: PromotionStrategy
 metadata:
   name: petclinic
 spec:
-  activeCommitStatuses:
-    - key: argocd-health-petclinic
   proposedCommitStatuses:
     - key: github-required-checks
   environments:

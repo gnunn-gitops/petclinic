@@ -1,0 +1,31 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: petclinic-dev
+  labels:
+    app: petclinic
+    env: dev
+spec:
+  interval: 1m
+  url: https://github.com/gnunn-gitops/petclinic-flux.git
+  ref:
+    branch: environment/dev
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: petclinic-dev
+  labels:
+    app: petclinic
+    env: dev
+spec:
+  interval: 10m
+  retryInterval: 1m
+  timeout: 5m
+  prune: true
+  wait: false
+  sourceRef:
+    kind: GitRepository
+    name: petclinic-dev
+  path: ./
+  targetNamespace: petclinic-dev

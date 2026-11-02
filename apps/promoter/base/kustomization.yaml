@@ -4,11 +4,11 @@ kind: Kustomization
 namespace: petclinic-promoter
 
 resources:
+  - namespace.yaml
   - github-external-secret.yaml
   - gitops-promoter-github-app-key.yaml
   - scm-provider.yaml
   - git-repository.yaml
-  - argocd-commit-status.yaml
   - github-checks-commit-status.yaml
   - dependency-commit-status.yaml
   - promotion-strategy.yaml

@@ -4,12 +4,12 @@ kind: Kustomization
 namespace: petclinic-ci
 
 resources:
+  - namespace.yaml
   - docker-external-secret.yaml
   - container-cache-pvc.yaml
   - m2-cache-pvc.yaml
   - source-pvc.yaml
   - push-image-task.yaml
-  - send-to-slack-task.yaml
   - maven-task.yaml
   - pipeline-sa.yaml
   - pipeline.yaml
