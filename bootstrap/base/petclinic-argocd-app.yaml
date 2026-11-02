@@ -4,11 +4,11 @@ metadata:
   labels:
     cluster-name: hub-prod-local
     promoter.argoproj.io/has-promotionstrategy: "true"
-  name: petclinic-argocd
+  name: petclinic-promoter
 spec:
   destination:
     name: hub-prod-local
-    namespace: petclinic-argocd
+    namespace: petclinic-promoter
   project: petclinic
   source:
     path: apps/argocd/base
