@@ -12,11 +12,11 @@ labels:
       app.openshift.io/runtime-icon: quarkus
       test-trigger: "20261001135204"
 resources:
-  # - monitor-auth-secret.yaml
+  - monitor-auth-secret.yaml
   - petclinic-svc.yaml
   - petclinic-route.yaml
   - petclinic-rollout.yaml
-  # - smoke-test-analysis.yaml
+  - smoke-test-analysis.yaml
 images:
   - name: quay.io/gnunn/quarkus-petclinic
     newName: quay.io/gnunn/quarkus-petclinic

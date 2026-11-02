@@ -17,6 +17,9 @@ spec:
     - name: APP_NAME
       type: string
       default: Petclinic
+    - name: ACS_ENDPOINT
+      type: string
+      default: central-rhacs-operator.apps.hub.ocplab.com:443
   tasks:
     - name: acquire-lease
       taskRef:
@@ -71,6 +74,15 @@ spec:
           - name: pathInRepo
             value: task/maven/1.0/maven.yaml
         resolver: git
+      # taskRef:
+      #   resolver: cluster
+      #   params:
+      #     - name: kind
+      #       value: task
+      #     - name: name
+      #       value: maven
+      #     - name: namespace
+      #       value: petclinic-ci
       workspaces:
         - name: source
           workspace: git-source
@@ -103,12 +115,119 @@ spec:
           value: src/main/docker/Dockerfile.hardened
         - name: BUILD_EXTRA_ARGS
           value: "--label=COMMIT=$(tasks.generate-id.results.short_commit) --label=BUILD_UID=$(tasks.generate-id.results.build_uid)"
+    - name: verify-signature
+      taskRef:
+        kind: Task
+        params:
+          - name: pathInRepo
+            value: task/verify-signature/1.0/verify-signature.yaml
+        resolver: git
+      runAfter:
+        - build
+      params:
+        - name: tuf_url
+          value: https://tuf-trusted-artifact-signer.apps.hub.ocplab.com
+        - name: oidc_issuer_url
+          value: https://sso.ocplab.com/realms/ocplab
+        - name: fulcio_url
+          value: https://fulcio-server-trusted-artifact-signer.apps.hub.ocplab.com
+        - name: rekor_url
+          value: https://rekor-server-trusted-artifact-signer.apps.hub.ocplab.com
+        - name: certificate_identity
+          value: tekton-builder@rhdp.com
+        - name: image_url
+          value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
+    - name: acs-scan-image
+      taskRef:
+        kind: Task
+        params:
+          - name: pathInRepo
+            value: task/acs-image-scan/1.0/acs-image-scan.yaml
+        resolver: git
+      runAfter:
+        - verify-signature
+      params:
+        - name: output_format
+          value: table
+        - name: image
+          value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
+      when:
+        - input: "$(workspaces.acs-central.bound)"
+          operator: in
+          values: ["true"]
+      workspaces:
+        - name: acs-central
+          workspace: acs-central
+    - name: acs-check-image
+      taskRef:
+        kind: Task
+        params:
+          - name: pathInRepo
+            value: task/acs-image-check/1.0/acs-image-check.yaml
+        resolver: git
+      runAfter:
+        - acs-scan-image
+      params:
+        - name: image
+          value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
+      when:
+        - input: "$(workspaces.acs-central.bound)"
+          operator: in
+          values: ["true"]
+      workspaces:
+        - name: acs-central
+          workspace: acs-central
+    - name: generate-sbom
+      taskRef:
+        kind: Task
+        params:
+          - name: pathInRepo
+            value: task/acs-image-sbom/1.0/acs-image-sbom.yaml
+        resolver: git
+      runAfter:
+        - acs-check-image
+      params:
+        - name: image
+          value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
+        - name: cyclonedxHostUrl
+          value: https://server.apps.hub.ocplab.com
+      when:
+        - input: "$(workspaces.acs-central.bound)"
+          operator: in
+          values: ["true"]
+      workspaces:
+        - name: acs-central
+          workspace: acs-central
+        - name: upload-sbom
+          workspace: upload-sbom
+    - name: notify-on-scan-fail
+      taskRef:
+        name: send-to-webhook-slack
+        kind: Task
+      runAfter:
+        - generate-sbom
+      when:
+        - input: "$(tasks.acs-check-image.results.check_passed)"
+          operator: in
+          values: ["false"]
+        - input: "$(workspaces.slack-deployments-webhook.bound)"
+          operator: in
+          values: ["true"]
+      params:
+        - name: message
+          value: |-
+            *$(params.APP_NAME) Image Scan Failed*
+            The image scan for $(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id) failed, please view test results here: https://$(params.ACS_ENDPOINT)/main/vulnerabilities/user-workloads?vulnerabilityState=OBSERVED&entityTab=CVE&sortOption[0][field]=Critical%20Severity%20Count&sortOption[0][direction]=desc&sortOption[1][field]=Important%20Severity%20Count&sortOption[1][direction]=desc&sortOption[2][field]=Moderate%20Severity%20Count&sortOption[2][direction]=desc&sortOption[3][field]=Low%20Severity%20Count&sortOption[3][direction]=desc&sortOption[4][field]=Unknown%20Severity%20Count&sortOption[4][direction]=desc&s[Image%20Tag][0]=$(tasks.generate-id.results.tag_id)
+      workspaces:
+        - name: slack-secret
+          workspace: slack-deployments-webhook
     - name: tag-image
       taskRef:
         name: push-image
         kind: Task
       runAfter:
-        - build
+        - notify-on-scan-fail
+        - verify-signature
       params:
         - name: SRC_IMAGE
           value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
@@ -116,6 +235,68 @@ spec:
           value: $(params.IMAGE_DEST_URL)
         - name: DEST_TAGS
           value: "$(tasks.generate-id.results.tag_id)"
+    - name: notify-build-complete
+      taskRef:
+        name: send-to-webhook-slack
+        kind: Task
+      runAfter:
+        - tag-image
+      when:
+        - input: "$(workspaces.slack-deployments-webhook.bound)"
+          operator: in
+          values: ["true"]
+      params:
+        - name: console_message
+          value: |-
+            $(params.APP_NAME) Build $(tasks.generate-id.results.tag_id) Completed
+
+            The build of image $(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id) has been completed
+
+            * Quay Image: https://$(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id)
+            * ACS Scan: https://$(params.ACS_ENDPOINT)/main/vulnerabilities/user-workloads?vulnerabilityState=OBSERVED&entityTab=CVE&sortOption[0][field]=Critical%20Severity%20Count&sortOption[0][direction]=desc&sortOption[1][field]=Important%20Severity%20Count&sortOption[1][direction]=desc&sortOption[2][field]=Moderate%20Severity%20Count&sortOption[2][direction]=desc&sortOption[3][field]=Low%20Severity%20Count&sortOption[3][direction]=desc&sortOption[4][field]=Unknown%20Severity%20Count&sortOption[4][direction]=desc&s[Image%20Tag][0]=$(tasks.generate-id.results.tag_id)
+        - name: message_type
+          value: raw
+        - name: message
+          value: |-
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Petclinic Pipeline Complete",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Petclinic pipeline for image $(tasks.generate-id.results.tag_id) has completed"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Pipeline Results*"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "* <https://$(params.IMAGE_DEST_URL):$(tasks.generate-id.results.tag_id)|Quay Image>\n* <https://$(params.ACS_ENDPOINT)/main/vulnerabilities/user-workloads?vulnerabilityState=OBSERVED&entityTab=CVE&sortOption[0][field]=Critical%20Severity%20Count&sortOption[0][direction]=desc&sortOption[1][field]=Important%20Severity%20Count&sortOption[1][direction]=desc&sortOption[2][field]=Moderate%20Severity%20Count&sortOption[2][direction]=desc&sortOption[3][field]=Low%20Severity%20Count&sortOption[3][direction]=desc&sortOption[4][field]=Unknown%20Severity%20Count&sortOption[4][direction]=desc&s[Image%20Tag][0]=$(tasks.generate-id.results.tag_id)|ACS Scan>"
+                  }
+                }
+              ]
+            }
+      workspaces:
+        - name: slack-secret
+          workspace: slack-deployments-webhook
   finally:
     - name: release-lease
       taskRef:
@@ -127,5 +308,28 @@ spec:
       params:
         - name: lease-name
           value: "$(context.pipeline.name)"
+    - name: notify-on-fail
+      taskRef:
+        name: send-to-webhook-slack
+        kind: Task
+      when:
+        - input: $(tasks.status)
+          operator: in
+          values: ["Failed"]
+        - input: "$(workspaces.slack-deployments-webhook.bound)"
+          operator: in
+          values: ["true"]
+      params:
+        - name: message
+          value: "Some tasks in the $(context.pipeline.name) have failed in pipelinerun $(context.pipelinerun.name) failed, please investigate"
+      workspaces:
+        - name: slack-secret
+          workspace: slack-deployments-webhook
   workspaces:
     - name: git-source
+    - name: acs-central
+      optional: true
+    - name: upload-sbom
+      optional: true
+    - name: slack-deployments-webhook
+      optional: true
