@@ -10,6 +10,13 @@ spec:
   url: https://github.com/gnunn-gitops/petclinic-flux.git
   ref:
     branch: environment/stage
+  # The hydrated branch also carries .github/workflows and hydrator.metadata.
+  # The Kustomization uses path ./ with no kustomization.yaml, so Flux
+  # auto-generates one by recursively scanning for YAML; restrict the artifact
+  # to the rendered manifests so Actions workflows are not treated as manifests.
+  ignore: |
+    /*
+    !/manifests.yaml
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
