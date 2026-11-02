@@ -1,0 +1,8 @@
+apiVersion: promoter.argoproj.io/v1alpha1
+kind: DependentsSuccessfulCommitStatus
+metadata:
+  name: petclinic
+spec:
+  key: dependents-successful
+  promotionStrategyRef:
+    name: petclinic

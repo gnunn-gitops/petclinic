@@ -12,7 +12,7 @@ spec:
   project: petclinic
   source:
     path: apps/ci/base
-    repoURL: https://github.com/gnunn-gitops/petclinic.git
+    repoURL: https://github.com/gnunn-gitops/petclinic-flux.git
     targetRevision: HEAD
   syncPolicy:
     automated:

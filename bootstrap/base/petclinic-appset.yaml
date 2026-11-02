@@ -7,12 +7,12 @@ spec:
   goTemplateOptions: ["missingkey=error"]
   generators:
   - git:
-      repoURL: https://github.com/gnunn-gitops/petclinic.git
+      repoURL: https://github.com/gnunn-gitops/petclinic-flux.git
       revision: HEAD
       directories:
       - path: environments/overlays/*
       values:
-        repoURL: https://github.com/gnunn-gitops/petclinic.git
+        repoURL: https://github.com/gnunn-gitops/petclinic-flux.git
         destination: workload-prod-local
   ignoreApplicationDifferences:
     - jsonPointers:

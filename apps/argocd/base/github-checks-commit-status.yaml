@@ -1,0 +1,252 @@
+# Taken from Zach Aller's repo here: https://github.com/zachaller/argocon-gitops-promoter-hydrate-demo/blob/main/user-configuration/promotion-app/gh-web.yaml
+#
+# Gate promotion on GitHub's *actually required* checks, and name the ones that
+# are not passing.
+#
+# Uses the GitHub GraphQL API rather than REST because only GraphQL exposes
+# `isRequired`, which resolves branch protection / rulesets for you. That removes
+# the hand-maintained allowlist that the REST version
+# (webrequest-github-required-checks.yaml) needs, while still giving you the
+# individual check names that the PR-level `mergeable_state` field cannot.
+#
+# Both required check runs (GitHub Actions and friends) and required legacy
+# status contexts are covered. A required check that has not reported yet shows
+# up as an EXPECTED status context, so it is counted as still pending rather
+# than silently passing.
+#
+# Before applying, replace promotionStrategyRef.name with your PromotionStrategy.
+# Owner and repo are derived from the pull request URL, so there is nothing else
+# to hardcode.
+#
+# One caveat: if you mark this gate's own check run ("<key>/<branch>") as
+# required in branch protection, it becomes required-and-pending forever and the
+# promotion deadlocks. Don't do that.
+apiVersion: promoter.argoproj.io/v1alpha1
+kind: WebRequestCommitStatus
+metadata:
+  name: github-required-checks
+spec:
+  promotionStrategyRef:
+    name: petclinic
+  key: github-required-checks
+  reportOn: proposed
+
+  descriptionTemplate: >-
+    {{ if .SuccessOutput }}{{ index .SuccessOutput "summary" }}{{ else }}Waiting for GitHub required checks{{ end }}
+
+  urlTemplate: >-
+    {{- range .PromotionStrategy.Status.Environments }}{{- if eq .Branch $.Branch }}{{ if .PullRequest }}{{ .PullRequest.Url }}{{ end }}{{- end }}{{- end }}
+
+  httpRequest:
+    urlTemplate: "https://api.github.com/graphql"
+    methodTemplate: POST
+    headerTemplates:
+      # merge-info-preview is what unlocks mergeStateStatus on older GitHub
+      # Enterprise Server schemas; it is a no-op on github.com where the field
+      # is already GA.
+      Accept: "application/vnd.github.merge-info-preview+json"
+      X-GitHub-Api-Version: "2022-11-28"
+    authentication:
+      scm: {}
+    timeout: 30s
+    # Three things are fetched in one call:
+    #   pullRequest.mergeStateStatus — GitHub's own verdict, which knows about
+    #     required checks that have not reported yet (see success.when below).
+    #   ref(qualifiedName:$baseRef).rules — the ruleset-declared required contexts
+    #     for the branch being merged INTO. This is what makes it possible to name
+    #     a required check that has never reported, since such a check does not
+    #     appear in statusCheckRollup at all.
+    #   object(oid:).statusCheckRollup — the per-check state for what has reported.
+    # The commit is fetched by oid rather than as "the PR's head commit" so the
+    # gate always reports on exactly the hydrated SHA promoter is promoting.
+    # baseRef is the environment branch, which is the base of promoter's PR.
+    bodyTemplate: >-
+      {{- range .PromotionStrategy.Status.Environments }}{{- if eq .Branch $.Branch }}
+      {"query":"query($owner:String!,$repo:String!,$oid:GitObjectID!,$pr:Int!,$baseRef:String!){repository(owner:$owner,name:$repo){pullRequest(number:$pr){mergeStateStatus}ref(qualifiedName:$baseRef){rules(first:50){nodes{type parameters{... on RequiredStatusChecksParameters{requiredStatusChecks{context}}}}}}object(oid:$oid){... on Commit{oid statusCheckRollup{state contexts(first:100){nodes{__typename ... on CheckRun{name status conclusion isRequired(pullRequestNumber:$pr)} ... on StatusContext{context state isRequired(pullRequestNumber:$pr)}}}}}}}}",
+      "variables":{"owner":"{{ index (splitList "/" (trimPrefix "https://github.com/" .PullRequest.Url)) 0 }}","repo":"{{ index (splitList "/" (trimPrefix "https://github.com/" .PullRequest.Url)) 1 }}","oid":"{{ .Proposed.Hydrated.Sha }}","pr":{{ .PullRequest.ID }},"baseRef":"{{ .Branch }}"}}
+      {{- end }}{{- end }}
+
+  success:
+    when:
+      # requiredContexts below is computed, not configured: GitHub's isRequired
+      # field resolves branch protection and rulesets, so there is no list of
+      # check names to maintain anywhere in this file.
+      #
+      # A branch with zero required checks passes this gate. Requiredness is
+      # resolved against the PULL REQUEST'S BASE BRANCH — for promoter that is
+      # the environment branch (e.g. environments/development), NOT main — so an
+      # environment whose branch has no protection rules simply has nothing to
+      # wait on. mergeState still has to be mergeable, so branch protection that
+      # blocks for other reasons (required reviews, conflicts) is still honored.
+      variables:
+        expression: |
+          let envStatus = find(PromotionStrategy.Status.Environments, {.Branch == Branch});
+          let wrcsEnv = find(WebRequestCommitStatus.Status.Environments ?? [], {.Branch == Branch});
+          let commit = Response == nil ? nil : Response.Body?.data?.repository?.object;
+          let nodes = commit?.statusCheckRollup?.contexts?.nodes ?? [];
+          let reportedNames = map(nodes, #.__typename == "CheckRun" ? #.name : #.context);
+          let ruleNodes = Response == nil ? [] : (Response.Body?.data?.repository?.ref?.rules?.nodes ?? []);
+          let rscLists = map(filter(ruleNodes, #.type == "REQUIRED_STATUS_CHECKS"), #.parameters?.requiredStatusChecks ?? []);
+          let fromRules = map(flatten(rscLists), #.context);
+          let fromRollup = map(filter(nodes, (#.isRequired ?? false) == true), #.__typename == "CheckRun" ? #.name : #.context);
+          let requiredNames = concat(fromRules, filter(fromRollup, !(# in fromRules)));
+          let missing = filter(requiredNames, !(# in reportedNames));
+          let passed = ["SUCCESS", "SKIPPED", "NEUTRAL"];
+          let waiting = ["EXPECTED", "PENDING", "QUEUED", "IN_PROGRESS", "WAITING", "REQUESTED"];
+          let normalized = map(filter(nodes, (#.__typename == "CheckRun" ? #.name : #.context) in requiredNames), #.__typename == "CheckRun"
+            ? {name: #.name, state: #.status != "COMPLETED" ? (#.status ?? "PENDING") : (#.conclusion ?? "UNKNOWN")}
+            : {name: #.context, state: #.state ?? "UNKNOWN"});
+
+          {
+            reportedSha: envStatus != nil ? envStatus.Proposed.Hydrated.Sha : "",
+            lastSuccessfulSha: wrcsEnv != nil ? (wrcsEnv.LastSuccessfulSha ?? "") : "",
+            graphqlErrors: Response == nil ? [] : map(Response.Body?.errors ?? [], #.message ?? "unknown error"),
+            mergeState: Response == nil ? "" : (Response.Body?.data?.repository?.pullRequest?.mergeStateStatus ?? "UNKNOWN"),
+            commitFound: commit != nil,
+            returnedOid: commit?.oid ?? "",
+            rollupState: commit?.statusCheckRollup?.state ?? "NONE",
+            allContexts: len(nodes),
+            required: requiredNames ?? [],
+            total: len(requiredNames),
+            missing: missing ?? [],
+            failing: map(filter(normalized, !(#.state in passed) && !(#.state in waiting)), #.name + " (" + lower(#.state) + ")"),
+            running: map(filter(normalized, #.state in waiting), #.name),
+          }
+
+      # GraphQL answers 200 even for query errors, so errors are checked explicitly.
+      #
+      # mergeState is the authoritative half of this gate, not a nicety. A check
+      # that is required but has never reported is frequently ABSENT from
+      # statusCheckRollup.contexts rather than present as EXPECTED, so the
+      # failing/running lists alone would fail open and promote. GitHub itself
+      # knows about the unreported check and answers BLOCKED, so the merge state
+      # is what makes this safe; the per-check lists exist to name what is wrong.
+      #
+      # UNSTABLE must be accepted: it means "mergeable, some non-required check is
+      # not passing", which is the state this gate's own pending check run creates.
+      expression: |
+        if Response == nil {
+          (Phase == "success" && Variables.lastSuccessfulSha == Variables.reportedSha)
+        } else {
+          if (Response.StatusCode == 200 &&
+            len(Variables.graphqlErrors) == 0 &&
+            Variables.commitFound &&
+            len(Variables.failing) == 0 &&
+            len(Variables.running) == 0 &&
+            len(Variables.missing) == 0 &&
+            Variables.mergeState in ["CLEAN", "UNSTABLE", "HAS_HOOKS"]) {
+              { "phase": "success" }
+          } else {
+            if (Response.StatusCode == 200 &&
+              len(Variables.graphqlErrors) == 0 &&
+              Variables.commitFound &&
+              (len(Variables.failing) > 0 ||
+              len(Variables.missing) > 0) &&
+              len(Variables.running) == 0 &&
+              Variables.mergeState in ["BLOCKED"]) {
+                { "phase": "failure" }
+            } else {
+                { "phase": "pending" }
+            }
+          }
+        }
+      output:
+        expression: |
+          let fresh = {
+            sha: Variables.reportedSha,
+            summary: "Waiting for GitHub required checks",
+            required: [],
+            missing: [],
+            failing: [],
+            running: [],
+            commitFound: false
+          };
+          let mergeable = Variables.mergeState in ["CLEAN", "UNSTABLE", "HAS_HOOKS"];
+          let named = trim(
+            (len(Variables.failing) > 0 ? "Failing: " + join(Variables.failing, ", ") + "; " : "") +
+            (len(Variables.running) > 0 ? "Waiting on: " + join(Variables.running, ", ") + "; " : "") +
+            (len(Variables.missing) > 0 ? "Not reported: " + join(Variables.missing, ", ") : ""),
+            "; ");
+          let blockedReason = {
+            "BLOCKED": "Blocked by branch protection — a required review or a required check that has not reported yet",
+            "BEHIND": "Branch is out of date with its base branch",
+            "DIRTY": "Merge conflict with the base branch",
+            "DRAFT": "Pull request is still a draft",
+            "UNKNOWN": "GitHub is still computing the merge state"
+          };
+          Response == nil
+            ? ((SuccessOutput != nil && (SuccessOutput.sha ?? "") == Variables.reportedSha) ? SuccessOutput : fresh)
+            : {
+                sha: Variables.reportedSha,
+                specGeneration: WebRequestCommitStatus.Generation,
+                mergeState: Variables.mergeState,
+                commitFound: Variables.commitFound,
+                returnedOid: Variables.returnedOid,
+                rollupState: Variables.rollupState,
+                allContexts: Variables.allContexts,
+                required: Variables.required,
+                requiredCount: Variables.total,
+                missing: Variables.missing,
+                failing: Variables.failing,
+                running: Variables.running,
+                summary: len(Variables.graphqlErrors) > 0
+                  ? "GitHub API error: " + join(Variables.graphqlErrors, "; ")
+                  : (!Variables.commitFound
+                      ? "Commit not visible to the GitHub API — check the App can read this repo and that the hydrated SHA is pushed"
+                      : (named != ""
+                          ? named
+                          : (!mergeable
+                              ? (blockedReason[Variables.mergeState] ?? ("Not mergeable (state: " + Variables.mergeState + ")"))
+                              : (Variables.total > 0
+                                  ? "All " + string(Variables.total) + (Variables.total == 1 ? " required check passed" : " required checks passed")
+                                  : "No required checks on this branch — nothing to gate on")))),
+
+                lastSuccessfulSha: Variables.lastSuccessfulSha,
+                phase: Variables.phase,
+                idx: Variables.idx,
+                ahead: Variables.ahead,
+                evaluatedGeneration: Variables.evaluatedGeneration,
+                staleResult: Variables.staleResult,
+                doTrigger: Variables.doTrigger
+              }
+  mode:
+    context: environments
+    # Trigger rather than polling: only spend a GraphQL call when this environment
+    # has an open PR, is at the front of the promotion queue, and has not already
+    # been verified for the current hydrated SHA.
+    trigger:
+      requeueDuration: 1m
+      when:
+        variables:
+          expression: |
+            let envStatus = find(PromotionStrategy.Status.Environments, {.Branch == Branch});
+            let wrcsEnv = find(WebRequestCommitStatus.Status.Environments ?? [], {.Branch == Branch});
+            let lastSuccessfulSha = wrcsEnv != nil ? (wrcsEnv.LastSuccessfulSha ?? "") : "";
+            let idx = findIndex(PromotionStrategy.Status.Environments, #.Branch == Branch);
+            let ahead = idx == nil || idx == 0 ? [] : PromotionStrategy.Status.Environments[:idx];
+            let evaluatedGeneration = SuccessOutput != nil ? int(SuccessOutput.specGeneration ?? 0) : 0;
+            let staleResult = lastSuccessfulSha != envStatus?.Proposed.Hydrated.Sha ||
+                              evaluatedGeneration != int(WebRequestCommitStatus.Generation);
+            let commitFound = SuccessOutput != nil ? (SuccessOutput.commitFound ?? false ): false;
+            let doTrigger = (not commitFound) ? true : (
+              envStatus != nil &&
+              envStatus.PullRequest != nil &&
+              (envStatus.PullRequest.ID ?? "") != "" &&
+              string(envStatus.PullRequest.State) == "open" &&
+              all(ahead, #.PullRequest == nil || string(#.PullRequest.State) != "open") &&
+              staleResult
+              );
+            {
+              commitFound: commitFound,
+              staleResult: staleResult,
+              doTrigger: doTrigger
+            }
+        expression: |
+          Variables.doTrigger
+        output:
+          expression: |
+            {
+              commitFound: Variables.commitFound,
+              staleResult: Variables.staleResult,
+              doTrigger: Variables.doTrigger
+            }

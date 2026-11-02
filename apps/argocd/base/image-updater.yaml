@@ -23,5 +23,5 @@ spec:
           branch: "main"
           # pullRequest:
           #   github: {}
-          repository: "https://github.com/gnunn-gitops/petclinic.git"
+          repository: "https://github.com/gnunn-gitops/petclinic-flux.git"
           writeBackTarget: "kustomization:/apps/petclinic/base"
