@@ -14,6 +14,8 @@ spec:
   # The Kustomization uses path ./ with no kustomization.yaml, so Flux
   # auto-generates one by recursively scanning for YAML; restrict the artifact
   # to the rendered manifests so Actions workflows are not treated as manifests.
+  # gitignore syntax: /* excludes everything, then ! re-includes manifests.yaml,
+  # which is the only file Flux deploys from this branch.
   ignore: |
     /*
     !/manifests.yaml
