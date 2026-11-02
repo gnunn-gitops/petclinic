@@ -1,9 +1,66 @@
-apiVersion: v1
-kind: Namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
 metadata:
   labels:
-    tenant: petclinic
-  name: petclinic-prod
+    app: petclinic
+    app.kubernetes.io/component: petclinic
+    app.kubernetes.io/instance: petclinic
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/part-of: petclinic
+    app.openshift.io/runtime-icon: quarkus
+    test-trigger: "20261001135204"
+  name: monitor-auth-secret
+  namespace: petclinic-prod
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - monitor-auth-secret
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: petclinic
+    app.kubernetes.io/component: petclinic
+    app.kubernetes.io/instance: petclinic
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/part-of: petclinic
+    app.openshift.io/runtime-icon: quarkus
+    test-trigger: "20261001135204"
+  name: monitor-auth-secret
+  namespace: petclinic-prod
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: monitor-auth-secret
+subjects:
+- kind: ServiceAccount
+  name: argo-rollouts
+  namespace: rollout-manager
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    kubernetes.io/service-account.name: default
+  labels:
+    app: petclinic
+    app.kubernetes.io/component: petclinic
+    app.kubernetes.io/instance: petclinic
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/part-of: petclinic
+    app.openshift.io/runtime-icon: quarkus
+    test-trigger: "20261001135204"
+  name: monitor-auth-secret
+  namespace: petclinic-prod
+type: kubernetes.io/service-account-token
 ---
 apiVersion: v1
 kind: Service
@@ -183,6 +240,64 @@ spec:
           claimName: petclinic-db
 ---
 apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  labels:
+    app: petclinic
+    app.kubernetes.io/component: petclinic
+    app.kubernetes.io/instance: petclinic
+    app.kubernetes.io/name: petclinic
+    app.kubernetes.io/part-of: petclinic
+    app.openshift.io/runtime-icon: quarkus
+    test-trigger: "20261001135204"
+  name: smoke-test
+  namespace: petclinic-prod
+spec:
+  args:
+  - name: namespace
+  - name: route-name
+  - name: route-url
+  - name: api-token
+    valueFrom:
+      secretKeyRef:
+        key: token
+        name: monitor-auth-secret
+  metrics:
+  - count: 3
+    failureLimit: 1
+    interval: 20s
+    name: success-rate
+    provider:
+      prometheus:
+        address: https://thanos-querier.openshift-monitoring.svc.cluster.local:9091
+        headers:
+        - key: Authorization
+          value: Bearer {{args.api-token}}
+        insecure: true
+        query: |
+          irate(haproxy_backend_http_responses_total{exported_namespace='{{ args.namespace }}', route=~"{{ args.route-name }}", code="5xx"}[1m]) > 5 or on() vector(0)
+        timeout: 40
+    successCondition: result[0] == 0
+  - name: run-load
+    provider:
+      job:
+        spec:
+          backoffLimit: 1
+          template:
+            spec:
+              containers:
+              - args:
+                - siege -c 20 -d5 -t2M -v https://{{args.route-url}}
+                command:
+                - sh
+                - -c
+                image: quay.io/gnunn/tools:latest
+                name: siege
+              restartPolicy: Never
+---
+apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
   labels:
@@ -210,8 +325,24 @@ spec:
       stableService: petclinic-stable
       steps:
       - setWeight: 20
-      - pause: 30s
+      - analysis:
+          args:
+          - name: namespace
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: route-name
+            value: petclinic-canary
+          - name: route-url
+            value: petclinic-canary-petclinic-prod.apps.home.ocplab.com
+          templates:
+          - templateName: smoke-test
       - setWeight: 100
+      trafficRouting:
+        plugins:
+          argoproj-labs/openshift:
+            routes:
+            - petclinic
   template:
     metadata:
       annotations:
