@@ -1,0 +1,40 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: petclinic-prod
+  labels:
+    app: petclinic
+    env: prod
+spec:
+  interval: 1m
+  url: https://github.com/gnunn-gitops/petclinic-flux.git
+  ref:
+    branch: environment/prod
+  # The hydrated branch also carries .github/workflows and hydrator.metadata.
+  # The Kustomization uses path ./ with no kustomization.yaml, so Flux
+  # auto-generates one by recursively scanning for YAML; restrict the artifact
+  # to the rendered manifests so Actions workflows are not treated as manifests.
+  # gitignore syntax: /* excludes everything, then ! re-includes manifests.yaml,
+  # which is the only file Flux deploys from this branch.
+  ignore: |
+    /*
+    !/manifests.yaml
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: petclinic-prod
+  labels:
+    app: petclinic
+    env: prod
+spec:
+  interval: 10m
+  retryInterval: 1m
+  timeout: 5m
+  prune: true
+  wait: false
+  sourceRef:
+    kind: GitRepository
+    name: petclinic-prod
+  path: ./
+  targetNamespace: petclinic-prod

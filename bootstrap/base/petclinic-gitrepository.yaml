@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: petclinic
+  labels:
+    app: petclinic
+spec:
+  interval: 1m
+  url: https://github.com/gnunn-gitops/petclinic-flux.git
+  ref:
+    branch: main

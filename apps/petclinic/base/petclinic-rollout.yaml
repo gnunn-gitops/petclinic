@@ -16,25 +16,26 @@ spec:
       dynamicStableScale: true
       canaryService: petclinic-canary
       stableService: petclinic-stable
-      trafficRouting:
-        plugins:
-          argoproj-labs/openshift:
-            routes:
-              - petclinic
+      # trafficRouting:
+      #   plugins:
+      #     argoproj-labs/openshift:
+      #       routes:
+      #         - petclinic
       steps:
         - setWeight: 20
-        - analysis:
-            templates:
-              - templateName: smoke-test
-            args:
-              - name: namespace
-                valueFrom:
-                  fieldRef:
-                    fieldPath: metadata.namespace
-              - name: route-name
-                value: petclinic-canary
-              - name: route-url
-                value: https://petclinic-canary-petclinic-dev.apps.home.ocplab.com/
+        - pause: 30s
+        # - analysis:
+        #     templates:
+        #       - templateName: smoke-test
+        #     args:
+        #       - name: namespace
+        #         valueFrom:
+        #           fieldRef:
+        #             fieldPath: metadata.namespace
+        #       - name: route-name
+        #         value: petclinic-canary
+        #       - name: route-url
+        #         value: https://petclinic-canary-petclinic-dev.apps.home.ocplab.com/
         - setWeight: 100
   template:
     metadata:

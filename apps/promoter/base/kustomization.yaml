@@ -1,13 +1,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: petclinic-argocd
+namespace: petclinic-promoter
 
 resources:
-  - acs-token-secret.yaml
-  - image-updater-role.yaml
+  - namespace.yaml
   - github-external-secret.yaml
   - gitops-promoter-github-app-key.yaml
   - scm-provider.yaml
   - git-repository.yaml
-  - image-updater.yaml
+  - github-checks-commit-status.yaml
+  - dependency-commit-status.yaml
+  - promotion-strategy.yaml
