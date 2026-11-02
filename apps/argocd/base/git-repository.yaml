@@ -4,7 +4,7 @@ metadata:
   name: petclinic
 spec:
   github:
-    name: petclinic-flux
+    name: petclinic
     owner: gnunn-gitops
   scmProviderRef:
     name: petclinic

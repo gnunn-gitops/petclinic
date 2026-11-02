@@ -4,7 +4,7 @@ set -e
 DRY_SHA=$(git rev-parse HEAD)
 ENV=$1  # e.g., "production"
 PROPOSED_BRANCH="environment/${ENV}-next"
-REPO_URL="https://github.com/gnunn-gitops/petclinic-flux"
+REPO_URL="https://github.com/org/repo"
 NOTES_REF="refs/notes/hydrator.metadata"
 
 # Fetch the proposed branch and notes

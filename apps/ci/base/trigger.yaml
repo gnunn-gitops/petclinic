@@ -8,6 +8,9 @@ spec:
     - apiVersion: tekton.dev/v1
       kind: PipelineRun
       metadata:
+        annotations:
+          argocd.argoproj.io/compare-options: IgnoreExtraneous
+          argocd.argoproj.io/sync-options: Prune=false
         labels:
           tekton.dev/pipeline: petclinic
         generateName: petclinic-webhook-
@@ -27,6 +30,15 @@ spec:
           - name: git-source
             persistentVolumeClaim:
               claimName: source
+          - name: acs-central
+            secret:
+              secretName: acs-central
+          - name: upload-sbom
+            secret:
+              secretName: upload-sbom
+          - name: slack-deployments-webhook
+            secret:
+              secretName: slack-deployments-webhook
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
