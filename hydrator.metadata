@@ -1,8 +1,8 @@
 {
-  "drySha": "ee9ccf0714b0b6926d19a74c3fbf41b0a7229959",
+  "drySha": "77872eab2734384aa06cef1c889cbffb296a2286",
   "repoURL": "https://github.com/org/repo",
-  "author": "Gerald Nunn <gnunn1@users.noreply.github.com>",
-  "date": "2026-11-02T14:13:56-07:00",
-  "subject": "Merge pull request #300 from gnunn-gitops/revert-296-convert-bootstrap-to-flux\n",
-  "body": "Revert \"Convert bootstrap to flux\"\n"
+  "author": "argocd-image-updater <noreply@argoproj.io>",
+  "date": "2026-11-04T19:04:04Z",
+  "subject": "build: automatic update of petclinic-prod\n",
+  "body": "updates image gnunn/quarkus-petclinic tag '6a3ac01-3LNkPZAW5hUnralCFWRic2zcJeT' to '6a3ac01-3Lee9jgRZ3S8of1B3U6DsDlL6ph'\n\n"
 }
