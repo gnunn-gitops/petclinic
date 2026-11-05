@@ -140,8 +140,6 @@ spec:
         allowPrivilegeEscalation: true
         procMount: Unmasked
       volumeMounts:
-        # - mountPath: /var/lib/docker
-        #   name: dind-storage
         - mountPath: /var/run/podman
           name: podman-socket
   volumes:
