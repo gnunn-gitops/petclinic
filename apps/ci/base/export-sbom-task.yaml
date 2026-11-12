@@ -8,7 +8,7 @@ spec:
       type: string
     - name: IMAGE
       type: string
-    - default: https://server.apps.hub.ocplab.com/
+    - default: https://server.apps.hub.ocplab.com
       name: cyclonedxHostUrl
       type: string
   results:
@@ -32,6 +32,8 @@ spec:
           memory: 1Gi
       script: >
         set +x
+
+        echo "Calling API: $(params.cyclonedxHostUrl)/api/v3/sbom"
 
         curl -X POST $(params.cyclonedxHostUrl)/api/v3/sbom -H "Content-Type: application/vnd.cyclonedx+json; version=1.4" -H "Accept: */*" -d @sbom.json -D /tmp/header.txt > /dev/null
 
