@@ -68,12 +68,6 @@ spec:
         - name: source
           workspace: git-source
     - name: compile
-      # taskRef:
-      #   kind: Task
-      #   params:
-      #     - name: pathInRepo
-      #       value: task/maven/1.0/maven.yaml
-      #   resolver: git
       taskRef:
         resolver: cluster
         params:
@@ -86,6 +80,8 @@ spec:
       workspaces:
         - name: source
           workspace: git-source
+        - name: maven-repository
+          workspace: maven-repository
       runAfter:
         - generate-id
       params:
@@ -326,6 +322,7 @@ spec:
           workspace: slack-deployments-webhook
   workspaces:
     - name: git-source
+    - name: maven-repository
     - name: acs-central
       optional: true
     - name: upload-sbom

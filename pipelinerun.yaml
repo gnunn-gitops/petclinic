@@ -15,14 +15,26 @@ spec:
       value: quay.io/gnunn/quarkus-petclinic
   pipelineRef:
     name: petclinic
-  taskRunTemplate:
-    serviceAccountName: pipeline
+  taskRunSpecs:
+    - pipelineTaskName: compile
+      serviceAccountName: pipeline-user-namespace
+      podTemplate:
+        hostUsers: false
+        securityContext:
+          fsGroup: 1000
+          fsGroupChangePolicy: OnRootMismatch
+          runAsUser: 1000
+          runAsGroup: 1000
+          runAsNonRoot: true
   timeouts:
     pipeline: 1h0m0s
   workspaces:
     - name: git-source
       persistentVolumeClaim:
         claimName: source
+    - name: maven-repository
+      persistentVolumeClaim:
+        claimName: m2-cache
     - name: acs-central
       secret:
         secretName: acs-central
