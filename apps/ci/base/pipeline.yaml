@@ -177,7 +177,7 @@ spec:
         kind: Task
         params:
           - name: pathInRepo
-            value: task/acs-image-sbom/1.0/acs-image-sbom.yaml
+            value: task/acs-image-sbom/1.1/acs-image-sbom.yaml
         resolver: git
       runAfter:
         - acs-check-image
