@@ -33,7 +33,7 @@ spec:
       script: >
         set +x
 
-        curl -X POST $(params.cyclonedxHostUrl)/api/v1/sbom -H "Content-Type: application/vnd.cyclonedx+json; version=1.4" -H "Accept: */*" -d @sbom.json -D /tmp/header.txt > /dev/null
+        curl -X POST $(params.cyclonedxHostUrl)/api/v3/sbom -H "Content-Type: application/vnd.cyclonedx+json; version=1.4" -H "Accept: */*" -d @sbom.json -D /tmp/header.txt > /dev/null
 
         LOCATION=$(cat /tmp/header.txt | grep location: | awk '{print $2}' | sed 's|http:|https:|g')
 
