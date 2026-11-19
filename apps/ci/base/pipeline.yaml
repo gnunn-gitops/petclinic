@@ -177,11 +177,7 @@ spec:
         kind: Task
         params:
           - name: pathInRepo
-            value: task/acs-image-sbom/1.1/acs-image-sbom.yaml
-          - name: groups
-            value: petclinic
-          - name: labels
-            value: version=$(tasks.generate-id.results.tag_id),image=$(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
+            value: task/acs-image-sbom/1.2/acs-image-sbom.yaml
         resolver: git
       runAfter:
         - acs-check-image
@@ -190,6 +186,10 @@ spec:
           value: $(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
         - name: cyclonedxHostUrl
           value: https://server.apps.hub.ocplab.com
+        - name: groups
+          value: petclinic
+        - name: labels
+          value: version=$(tasks.generate-id.results.tag_id),image=$(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
       when:
         - input: "$(workspaces.acs-central.bound)"
           operator: in
