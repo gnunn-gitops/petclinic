@@ -178,6 +178,10 @@ spec:
         params:
           - name: pathInRepo
             value: task/acs-image-sbom/1.1/acs-image-sbom.yaml
+          - name: groups
+            value: petclinic
+          - name: labels
+            value: version=$(tasks.generate-id.results.tag_id),image=$(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
         resolver: git
       runAfter:
         - acs-check-image
