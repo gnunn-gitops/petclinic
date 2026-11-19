@@ -189,7 +189,7 @@ spec:
         - name: groups
           value: 01a1f47d-4818-72f4-80fd-228ae877da0e
         - name: labels
-          value: version=$(tasks.generate-id.results.tag_id),image=$(params.IMAGE_DEST_URL)@$(tasks.build.results.IMAGE_DIGEST)
+          value: app=quarkus-petclinic,version=$(tasks.generate-id.results.tag_id)
       when:
         - input: "$(workspaces.acs-central.bound)"
           operator: in
