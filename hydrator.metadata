@@ -1,8 +1,8 @@
 {
-  "drySha": "21a6b211daa18bef8d4136ceadd7ebfebe22e63a",
+  "drySha": "28d02fc1ce2adf16de9898a6f60b9dbd4a919a68",
   "repoURL": "https://github.com/org/repo",
-  "author": "Gerald Nunn <gnunn1@users.noreply.github.com>",
-  "date": "2026-11-19T11:41:31-07:00",
-  "subject": "Update test-trigger timestamp in kustomization.yaml\n",
-  "body": "\n"
+  "author": "argocd-image-updater <noreply@argoproj.io>",
+  "date": "2026-11-23T21:24:54Z",
+  "subject": "build: automatic update of petclinic-stage\n",
+  "body": "updates image gnunn/quarkus-petclinic tag '00faeae-3MKlKF3xCJC5LcUuJtIwiurgeaH' to '00faeae-3MWamVzak6Am1xqmhrRfRWZ4liP'\n\n"
 }
