@@ -44,3 +44,6 @@ spec:
     - name: slack-deployments-webhook
       secret:
         secretName: slack-deployments-webhook
+    - name: image-updater-webhook
+      secret:
+        secretName: image-updater-webhook

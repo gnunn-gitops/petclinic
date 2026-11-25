@@ -39,6 +39,9 @@ spec:
           - name: slack-deployments-webhook
             secret:
               secretName: slack-deployments-webhook
+          - name: image-updater-webhook
+            secret:
+              secretName: image-updater-webhook
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener

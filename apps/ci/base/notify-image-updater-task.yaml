@@ -1,0 +1,108 @@
+# Simulates a quay.io "Repository Push" notification against the Argo CD
+# Image Updater webhook endpoint.
+#
+# This cluster is not reachable from the internet, so quay.io cannot deliver
+# real notifications. Posting the same payload ourselves at the end of a build
+# makes Image Updater re-check the image right away instead of waiting for its
+# next polling interval.
+#
+# Payload format: https://docs.quay.io/guides/notifications.html
+# Handler:        https://github.com/argoproj-labs/argocd-image-updater/blob/master/pkg/webhook/quay.go
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: notify-image-updater
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: messaging
+spec:
+  description: >-
+    Posts a synthetic quay.io repository push notification to the Argo CD Image
+    Updater webhook so that it picks up a newly pushed tag immediately.
+  params:
+    - name: IMAGE
+      type: string
+      description: Fully qualified image without a tag, e.g. quay.io/gnunn/quarkus-petclinic
+      default: quay.io/gnunn/quarkus-petclinic
+    - name: TAG
+      type: string
+      description: The tag that was just pushed, reported in updated_tags
+    - name: WEBHOOK_URL
+      type: string
+      description: Argo CD Image Updater webhook endpoint
+      default: http://argocd-image-updater-webhook.argocd.svc.cluster.local:8082/webhook
+  workspaces:
+    # Expects a single key "secret" holding the value Image Updater was started
+    # with in QUAY_WEBHOOK_SECRET. Quay has no signing support, so the secret is
+    # passed as a query parameter - that is what the upstream handler expects.
+    - name: webhook-secret
+      optional: true
+  steps:
+    - name: notify
+      image: registry.redhat.io/openshift4/ose-tools-rhel8:v4.10
+      script: |
+        #!/bin/sh
+        set -e
+
+        IMAGE="$(params.IMAGE)"
+        TAG="$(params.TAG)"
+        URL="$(params.WEBHOOK_URL)"
+
+        if [ -z "$TAG" ]; then
+          echo "ERROR: TAG must not be empty"
+          exit 1
+        fi
+
+        # Tolerate a tag being passed along with the image name
+        case "${IMAGE##*/}" in
+          *:*) IMAGE="${IMAGE%:*}" ;;
+        esac
+
+        REGISTRY="${IMAGE%%/*}"
+        REPOSITORY="${IMAGE#*/}"
+
+        if [ "$REGISTRY" = "$IMAGE" ] || [ -z "$REPOSITORY" ]; then
+          echo "ERROR: IMAGE must be fully qualified, e.g. quay.io/gnunn/quarkus-petclinic"
+          exit 1
+        fi
+
+        NAME="${REPOSITORY##*/}"
+        NAMESPACE="${REPOSITORY%%/*}"
+
+        QUERY="type=quay.io"
+        if [ "$(workspaces.webhook-secret.bound)" = "true" ] && [ -f "$(workspaces.webhook-secret.path)/secret" ]; then
+          QUERY="${QUERY}&secret=$(cat $(workspaces.webhook-secret.path)/secret)"
+        else
+          echo "Note: no webhook secret supplied, Image Updater will reject this if QUAY_WEBHOOK_SECRET is set"
+        fi
+
+        PAYLOAD=$(cat <<-END
+        {
+          "name": "${NAME}",
+          "repository": "${REPOSITORY}",
+          "namespace": "${NAMESPACE}",
+          "docker_url": "${IMAGE}",
+          "homepage": "https://${REGISTRY}/repository/${REPOSITORY}",
+          "updated_tags": ["${TAG}"]
+        }
+        END
+        )
+
+        echo "Notifying Image Updater at ${URL} that ${IMAGE}:${TAG} was pushed"
+        echo "$PAYLOAD"
+
+        HTTP_CODE=$(/usr/bin/curl -s -S -o /tmp/response -w '%{http_code}' \
+          -X POST \
+          -H 'Content-Type: application/json' \
+          --data "$PAYLOAD" \
+          "${URL}?${QUERY}")
+
+        echo ""
+        echo "Response (HTTP ${HTTP_CODE}): $(cat /tmp/response)"
+
+        case "$HTTP_CODE" in
+          2*) echo "Notification accepted" ;;
+          *)  echo "ERROR: webhook returned HTTP ${HTTP_CODE}"; exit 1 ;;
+        esac

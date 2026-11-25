@@ -234,6 +234,27 @@ spec:
           value: $(params.IMAGE_DEST_URL)
         - name: DEST_TAGS
           value: "$(tasks.generate-id.results.tag_id)"
+    # This cluster is not reachable from the internet so quay.io cannot deliver
+    # a real push notification. Emulating one here makes Image Updater pick up
+    # the new tag immediately instead of waiting for its next poll.
+    - name: notify-image-updater
+      taskRef:
+        name: notify-image-updater
+        kind: Task
+      runAfter:
+        - tag-image
+      when:
+        - input: "$(workspaces.image-updater-webhook.bound)"
+          operator: in
+          values: ["true"]
+      params:
+        - name: IMAGE
+          value: "$(params.IMAGE_DEST_URL)"
+        - name: TAG
+          value: "$(tasks.generate-id.results.tag_id)"
+      workspaces:
+        - name: webhook-secret
+          workspace: image-updater-webhook
     - name: notify-build-complete
       taskRef:
         name: send-to-webhook-slack
@@ -332,4 +353,6 @@ spec:
     - name: upload-sbom
       optional: true
     - name: slack-deployments-webhook
+      optional: true
+    - name: image-updater-webhook
       optional: true
