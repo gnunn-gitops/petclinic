@@ -20,4 +20,4 @@ resources:
 images:
   - name: quay.io/gnunn/quarkus-petclinic
     newName: quay.io/gnunn/quarkus-petclinic
-    newTag: 00faeae-3MbfnMqO47L9VF4QFyhwgbn5PFI
+    newTag: 00faeae-3MbjDSFl8UUxuITULsHHwn6Dfbq
