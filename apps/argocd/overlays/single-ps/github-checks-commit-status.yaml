@@ -215,7 +215,7 @@ spec:
     # has an open PR, is at the front of the promotion queue, and has not already
     # been verified for the current hydrated SHA.
     trigger:
-      requeueDuration: 1m
+      requeueDuration: 20s
       when:
         variables:
           expression: |
