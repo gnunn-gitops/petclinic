@@ -32,7 +32,7 @@ spec:
     - name: WEBHOOK_URL
       type: string
       description: Argo CD Image Updater webhook endpoint
-      default: http://argocd-image-updater-webhook.argocd.svc.cluster.local:8082/webhook
+      default: https://argocd-image-updater-webhook-argocd.apps.hub.ocplab.com/webhook
   workspaces:
     # Expects a single key "secret" holding the value Image Updater was started
     # with in QUAY_WEBHOOK_SECRET. Quay has no signing support, so the secret is
