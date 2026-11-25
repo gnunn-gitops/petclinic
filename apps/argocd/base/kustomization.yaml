@@ -8,6 +8,7 @@ resources:
   - image-updater-role.yaml
   - github-external-secret.yaml
   - gitops-promoter-github-app-key.yaml
+  - source-hydrator-app-key.yaml
   - scm-provider.yaml
   - git-repository.yaml
   - image-updater.yaml
