@@ -1,0 +1,29 @@
+# This can't work due to architecture requiring it in same namespace as ArgoCD.
+# Pass to the platform team to deploy on behalf of the tenant, once #19069 is fixed
+# maybe consider using project scoped repositories and have tenant imperatively
+# create secret
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  labels:
+    argocd.argoproj.io/secret-type: repository-write
+  name: github-push-secret
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: petclinic
+    kind: ClusterSecretStore
+  target:
+    name: github-push-secret
+    creationPolicy: Owner
+    template:
+      engineVersion: v2
+      data:
+        url: https://github.com/gnunn-gitops/petclinic
+        type: git
+        githubAppID: "5926023"
+        githubAppInstallationID: "185881508"
+  data:
+    - secretKey: githubAppPrivateKey
+      remoteRef:
+        key: SOURCE_HYDRATOR_GITHUB_KEY
